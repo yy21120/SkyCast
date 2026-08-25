@@ -1,0 +1,52 @@
+{
+  "fixture_type": "synthetic_replay",
+  "notice": "Synthetic values for deterministic development tests; not observed weather.",
+  "city": {
+    "id": "wuhan",
+    "name": "武汉"
+  },
+  "snapshots": [
+    {
+      "valid_date": "2026-08-25",
+      "sunset": "2026-08-25T18:55:00+08:00",
+      "sampled_at": "2026-08-25T19:00:00+08:00",
+      "low_cloud_percent": 12,
+      "mid_cloud_percent": 38,
+      "high_cloud_percent": 58,
+      "precipitation_probability_percent": 5,
+      "visibility_meters": 28000,
+      "relative_humidity_percent": 66,
+      "source_id": "skycast:synthetic-replay-v1",
+      "source_url": null,
+      "retrieved_at": "2026-08-25T00:00:00Z"
+    },
+    {
+      "valid_date": "2026-08-26",
+      "sunset": "2026-08-26T18:54:00+08:00",
+      "sampled_at": "2026-08-26T19:00:00+08:00",
+      "low_cloud_percent": 46,
+      "mid_cloud_percent": 52,
+      "high_cloud_percent": 67,
+      "precipitation_probability_percent": 22,
+      "visibility_meters": 18000,
+      "relative_humidity_percent": 77,
+      "source_id": "skycast:synthetic-replay-v1",
+      "source_url": null,
+      "retrieved_at": "2026-08-25T00:00:00Z"
+    },
+    {
+      "valid_date": "2026-08-27",
+      "sunset": "2026-08-27T18:53:00+08:00",
+      "sampled_at": "2026-08-27T19:00:00+08:00",
+      "low_cloud_percent": 88,
+      "mid_cloud_percent": 82,
+      "high_cloud_percent": 14,
+      "precipitation_probability_percent": 72,
+      "visibility_meters": 7000,
+      "relative_humidity_percent": 92,
+      "source_id": "skycast:synthetic-replay-v1",
+      "source_url": null,
+      "retrieved_at": "2026-08-25T00:00:00Z"
+    }
+  ]
+}
