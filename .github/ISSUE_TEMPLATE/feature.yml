@@ -1,0 +1,39 @@
+name: Feature
+description: 从用户问题到可验收实现的功能任务
+title: "[Feature]: "
+labels: ["feature"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 用户问题
+      description: 谁在什么场景遇到什么问题？
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: 期望结果
+      description: 完成后用户能够做出什么决策？
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 范围与非范围
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收标准
+      description: 使用可观察、可测试的 Given/When/Then 或清单。
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: 数据、模型与风险
+      description: 写明来源、授权、新鲜度、基线、失败降级和安全影响。
+    validations:
+      required: true

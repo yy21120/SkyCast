@@ -1,0 +1,37 @@
+# Build output
+build/
+.cxx/
+.gradle/
+**/build/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Android/local configuration
+local.properties
+*.jks
+*.keystore
+
+# Secrets and local data
+.env
+.env.*
+!.env.example
+data/private/
+secrets/
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.py[cod]
+*.egg-info/
+
+# Operating systems
+.DS_Store
+Thumbs.db
+
+# Microsoft Office temporary lock files
+~$*.docx
