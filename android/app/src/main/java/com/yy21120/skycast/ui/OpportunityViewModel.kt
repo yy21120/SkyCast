@@ -4,13 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.yy21120.skycast.data.HttpOpportunityRepository
+import com.yy21120.skycast.data.OpportunityNetworkException
 import com.yy21120.skycast.data.OpportunityRepository
 import com.yy21120.skycast.data.OpportunitiesResponse
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerializationException
 
 sealed interface OpportunityUiState {
     data object Loading : OpportunityUiState
@@ -36,9 +41,7 @@ class OpportunityViewModel(
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: Exception) {
-                OpportunityUiState.Error(
-                    message = exception.message ?: "暂时无法获取晚霞机会，请稍后重试。",
-                )
+                OpportunityUiState.Error(message = userFacingErrorMessage(exception))
             }
         }
     }
@@ -54,3 +57,15 @@ class OpportunityViewModel(
             }
     }
 }
+
+internal fun userFacingErrorMessage(exception: Exception): String =
+    when (exception) {
+        is UnknownHostException,
+        is ConnectException,
+        -> "无法连接 SkyCast 服务，请检查网络或确认本地服务已启动。"
+
+        is SocketTimeoutException -> "服务响应超时，请稍后重试。"
+        is OpportunityNetworkException -> exception.message ?: "服务暂时不可用，请稍后重试。"
+        is SerializationException -> "服务返回的数据暂时无法解析，请稍后重试。"
+        else -> "暂时无法获取晚霞机会，请稍后重试。"
+    }
