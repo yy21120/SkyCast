@@ -1,12 +1,16 @@
 package com.yy21120.skycast.ui
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.yy21120.skycast.data.HttpOpportunityRepository
+import com.yy21120.skycast.data.CachedOpportunityRepository
+import com.yy21120.skycast.data.HttpOpportunityDataSource
 import com.yy21120.skycast.data.OpportunityNetworkException
 import com.yy21120.skycast.data.OpportunityRepository
-import com.yy21120.skycast.data.OpportunitiesResponse
+import com.yy21120.skycast.data.OpportunityResult
+import com.yy21120.skycast.data.local.RoomOpportunityCacheStore
+import com.yy21120.skycast.data.local.SkyCastDatabase
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -19,7 +23,7 @@ import kotlinx.serialization.SerializationException
 
 sealed interface OpportunityUiState {
     data object Loading : OpportunityUiState
-    data class Success(val response: OpportunitiesResponse) : OpportunityUiState
+    data class Success(val result: OpportunityResult) : OpportunityUiState
     data class Error(val message: String) : OpportunityUiState
 }
 
@@ -47,12 +51,20 @@ class OpportunityViewModel(
     }
 
     companion object {
-        fun factory(baseUrl: String): ViewModelProvider.Factory =
+        fun factory(
+            applicationContext: Context,
+            baseUrl: String,
+        ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     require(modelClass.isAssignableFrom(OpportunityViewModel::class.java))
-                    return OpportunityViewModel(HttpOpportunityRepository(baseUrl)) as T
+                    val database = SkyCastDatabase.getInstance(applicationContext)
+                    val repository = CachedOpportunityRepository(
+                        remote = HttpOpportunityDataSource(baseUrl),
+                        cache = RoomOpportunityCacheStore(database.opportunityCacheDao()),
+                    )
+                    return OpportunityViewModel(repository) as T
                 }
             }
     }

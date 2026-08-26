@@ -1,7 +1,9 @@
 package com.yy21120.skycast.ui
 
-import com.yy21120.skycast.data.OpportunitiesResponse
+import com.yy21120.skycast.data.OpportunityDataSource
 import com.yy21120.skycast.data.OpportunityRepository
+import com.yy21120.skycast.data.OpportunityResult
+import com.yy21120.skycast.data.testOpportunityResponse
 import java.net.ConnectException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,7 +22,7 @@ class OpportunityViewModelTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         try {
             val repository = object : OpportunityRepository {
-                override suspend fun getWuhanOpportunities(days: Int): OpportunitiesResponse {
+                override suspend fun getWuhanOpportunities(days: Int): OpportunityResult {
                     throw ConnectException("Connection refused")
                 }
             }
@@ -34,6 +36,28 @@ class OpportunityViewModelTest {
                 ),
                 viewModel.uiState.value,
             )
+        } finally {
+            Dispatchers.resetMain()
+        }
+    }
+
+    @Test
+    fun `keeps cache metadata in success state`() = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        try {
+            val expected = OpportunityResult(
+                response = testOpportunityResponse(),
+                source = OpportunityDataSource.CACHE,
+                cachedAtEpochMillis = 1_000L,
+            )
+            val repository = object : OpportunityRepository {
+                override suspend fun getWuhanOpportunities(days: Int): OpportunityResult = expected
+            }
+
+            val viewModel = OpportunityViewModel(repository)
+            advanceUntilIdle()
+
+            assertEquals(OpportunityUiState.Success(expected), viewModel.uiState.value)
         } finally {
             Dispatchers.resetMain()
         }
