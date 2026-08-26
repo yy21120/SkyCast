@@ -50,6 +50,23 @@ class CachedOpportunityRepositoryTest {
     }
 
     @Test
+    fun `network failure without cache retains original error`() = runTest {
+        val networkError = ConnectException("offline")
+        val repository = repository(
+            remoteResult = Result.failure(networkError),
+            cache = FakeOpportunityCacheStore(),
+            now = 20_000L,
+        )
+
+        try {
+            repository.getWuhanOpportunities()
+            fail("Expected the original network error")
+        } catch (exception: ConnectException) {
+            assertEquals(networkError, exception)
+        }
+    }
+
+    @Test
     fun `cache older than six hours is marked expired`() = runTest {
         val cachedAt = 20_000L
         val cache = FakeOpportunityCacheStore(payload = cachedPayload(cachedAt))
