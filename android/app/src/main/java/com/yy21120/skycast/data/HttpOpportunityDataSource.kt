@@ -7,14 +7,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 
-class HttpOpportunityRepository(
+class HttpOpportunityDataSource(
     baseUrl: String,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val json: Json = Json { ignoreUnknownKeys = true },
-) : OpportunityRepository {
+) : OpportunityRemoteDataSource {
     private val normalizedBaseUrl = baseUrl.trimEnd('/')
 
-    override suspend fun getWuhanOpportunities(days: Int): OpportunitiesResponse =
+    override suspend fun fetchWuhanOpportunities(days: Int): OpportunitiesResponse =
         withContext(ioDispatcher) {
             require(days in 1..7) { "days must be between 1 and 7" }
             val connection = URL(

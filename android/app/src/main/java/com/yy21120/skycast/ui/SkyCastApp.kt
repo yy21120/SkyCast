@@ -20,6 +20,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,8 +31,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yy21120.skycast.data.AssessmentFactor
+import com.yy21120.skycast.data.OpportunityDataSource
+import com.yy21120.skycast.data.OpportunityResult
 import com.yy21120.skycast.data.SunsetOpportunity
+import java.time.Instant
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.Locale
@@ -47,8 +52,8 @@ fun SkyCastApp(viewModel: OpportunityViewModel) {
                 onRetry = viewModel::refresh,
             )
             is OpportunityUiState.Success -> OpportunityList(
-                cityName = state.response.city.name,
-                opportunities = state.response.opportunities,
+                result = state.result,
+                onRetry = viewModel::refresh,
             )
         }
     }
@@ -56,9 +61,10 @@ fun SkyCastApp(viewModel: OpportunityViewModel) {
 
 @Composable
 private fun OpportunityList(
-    cityName: String,
-    opportunities: List<SunsetOpportunity>,
+    result: OpportunityResult,
+    onRetry: () -> Unit,
 ) {
+    val response = result.response
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(20.dp),
@@ -66,7 +72,7 @@ private fun OpportunityList(
     ) {
         item {
             Text(
-                text = "${cityName}晚霞机会",
+                text = "${response.city.name}晚霞机会",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
             )
@@ -76,15 +82,71 @@ private fun OpportunityList(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            Spacer(modifier = Modifier.height(12.dp))
+            DataStatusBanner(result, onRetry)
         }
 
-        if (opportunities.isEmpty()) {
+        if (response.opportunities.isEmpty()) {
             item {
                 EmptyContent()
             }
         } else {
-            items(items = opportunities, key = { it.sceneId }) { opportunity ->
+            items(items = response.opportunities, key = { it.sceneId }) { opportunity ->
                 OpportunityCard(opportunity)
+            }
+        }
+    }
+}
+
+@Composable
+private fun DataStatusBanner(
+    result: OpportunityResult,
+    onRetry: () -> Unit,
+) {
+    val label: String
+    val contentColor: Color
+    val containerColor: Color
+    val cityZoneId = zoneIdOrDefault(result.response.city.timezone)
+
+    when (result.source) {
+        OpportunityDataSource.ONLINE -> {
+            label = "在线数据 · 更新于 ${formatTimestamp(result.response.generatedAt, cityZoneId)}"
+            contentColor = Color(0xFF166534)
+            containerColor = Color(0xFFEAF7EE)
+        }
+        OpportunityDataSource.CACHE -> {
+            label = if (result.isExpired) {
+                "缓存已过期，仅供参考 · 保存于 ${formatCacheTime(result.cachedAtEpochMillis, cityZoneId)}"
+            } else {
+                "离线缓存 · 保存于 ${formatCacheTime(result.cachedAtEpochMillis, cityZoneId)}"
+            }
+            contentColor = if (result.isExpired) Color(0xFF9A3412) else Color(0xFF6F5C00)
+            containerColor = if (result.isExpired) Color(0xFFFFEDE5) else Color(0xFFFFF8D8)
+        }
+    }
+
+    Surface(
+        color = containerColor,
+        contentColor = contentColor,
+        shape = RoundedCornerShape(12.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = label,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Medium,
+            )
+            if (result.source == OpportunityDataSource.CACHE) {
+                TextButton(onClick = onRetry) {
+                    Text("重新获取")
+                }
             }
         }
     }
@@ -255,3 +317,25 @@ private fun formatTime(value: String): String = try {
 } catch (_: DateTimeParseException) {
     value
 }
+
+internal fun formatTimestamp(
+    value: String,
+    zoneId: ZoneId = ZoneId.systemDefault(),
+): String = try {
+    OffsetDateTime.parse(value)
+        .atZoneSameInstant(zoneId)
+        .format(DateTimeFormatter.ofPattern("M月d日 HH:mm"))
+} catch (_: DateTimeParseException) {
+    value
+}
+
+internal fun formatCacheTime(
+    epochMillis: Long,
+    zoneId: ZoneId = ZoneId.systemDefault(),
+): String =
+    Instant.ofEpochMilli(epochMillis)
+        .atZone(zoneId)
+        .format(DateTimeFormatter.ofPattern("M月d日 HH:mm"))
+
+private fun zoneIdOrDefault(value: String): ZoneId =
+    runCatching { ZoneId.of(value) }.getOrDefault(ZoneId.systemDefault())

@@ -14,7 +14,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             SkyCastTheme {
                 val opportunityViewModel: OpportunityViewModel = viewModel(
-                    factory = OpportunityViewModel.factory(BuildConfig.API_BASE_URL),
+                    factory = OpportunityViewModel.factory(
+                        applicationContext = applicationContext,
+                        baseUrl = BuildConfig.API_BASE_URL,
+                    ),
                 )
                 SkyCastApp(viewModel = opportunityViewModel)
             }
