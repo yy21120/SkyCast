@@ -13,6 +13,7 @@ SkyCast 是一款面向风光、天文与强天气摄影场景的 AI 气象决�
 - FastAPI 后端已建立武汉晚霞回放与实时 Provider 边界；
 - Android 已支持机会卡、可追溯详情、离线缓存和实况结果反馈；
 - 服务端已支持 SQLite 反馈持久化和客户端幂等重试；
+- 数据源准入目录已覆盖天气预报、官方预警、雷达和 FY-4 卫星候选来源；
 - Git 仓库采用 GitHub Flow 和 Conventional Commits。
 
 ## 文档入口
@@ -20,6 +21,7 @@ SkyCast 是一款面向风光、天文与强天气摄影场景的 AI 气象决�
 - [产品全链路总纲](docs/PRODUCT_BLUEPRINT.md)
 - [MVP PRD](docs/PRD_MVP.md)
 - [技术架构](docs/ARCHITECTURE.md)
+- [数据源准入与公开演示边界](docs/DATA_SOURCE_ADMISSION.md)
 - [Git 实战工作流](docs/GIT_WORKFLOW.md)
 - [产品待办](docs/BACKLOG.md)
 
@@ -31,7 +33,9 @@ SkyCast/
 ├─ core/                 可复用 C++20 领域与计算核心
 ├─ android/              Android Compose 客户端
 ├─ server/               FastAPI 数据接入与评估服务
+├─ data/catalog/         机器可读的数据源准入目录
 ├─ data/sample/wuhan/    可公开回放的武汉样例
+├─ tools/                文档生成与准入校验工具
 └─ .github/              Issue 与 Pull Request 模板
 ```
 

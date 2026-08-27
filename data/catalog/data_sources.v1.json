@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "catalog_verified_at": "2026-08-27",
+  "review_after_days": 180,
+  "sources": [
+    {
+      "source_id": "open-meteo:forecast",
+      "provider": "Open-Meteo",
+      "product": "Weather Forecast API",
+      "category": "weather_forecast",
+      "admission_status": "approved",
+      "decision_summary": "准入非商业作品版；展示数据时必须署名，商业发布前切换付费方案。",
+      "access": {
+        "method": "public_api",
+        "authentication": "none",
+        "cost": "free_non_commercial",
+        "endpoint": "https://api.open-meteo.com/v1/forecast"
+      },
+      "licensing": {
+        "license_name": "CC BY 4.0 data licence with Free API non-commercial terms",
+        "license_url": "https://open-meteo.com/en/license",
+        "attribution_required": true,
+        "attribution_text": "Weather data by Open-Meteo.com",
+        "permissions": {
+          "local_research": "allowed",
+          "public_portfolio": "allowed",
+          "production": "conditional",
+          "redistribution": "conditional"
+        }
+      },
+      "freshness": {
+        "mode": "scheduled",
+        "expected_interval_minutes": 180,
+        "typical_latency_minutes": null,
+        "expires_after_minutes": 360,
+        "policy_basis": "目录采用 3 小时名义间隔；底层最佳匹配模型通常每 1 至 6 小时更新。"
+      },
+      "evidence": [
+        {
+          "url": "https://open-meteo.com/en/terms",
+          "claim": "免费 API 限非商业用途且有调用限额，商业用途需要订阅。",
+          "verified_at": "2026-08-27"
+        },
+        {
+          "url": "https://open-meteo.com/en/license",
+          "claim": "API 数据按 CC BY 4.0 提供，展示时必须署名并链接来源。",
+          "verified_at": "2026-08-27"
+        },
+        {
+          "url": "https://open-meteo.com/en/docs/model-updates",
+          "claim": "模型通常每数小时更新，超过 20 分钟的处理延迟会被标记。",
+          "verified_at": "2026-08-27"
+        }
+      ],
+      "fallback": "读取最近一次成功缓存；超过 360 分钟时标记数据过期并禁止强结论。",
+      "risk_note": "Best Match 会切换底层模型，不能把 3 小时目录值解释为固定 SLA。"
+    },
+    {
+      "source_id": "cma:nmc-radar-mosaic:web",
+      "provider": "中国气象局国家气象中心",
+      "product": "全国及区域天气雷达拼图网页产品",
+      "category": "radar",
+      "admission_status": "blocked",
+      "decision_summary": "网页仅用于人工查看；未取得书面授权前禁止下载、抓取、缓存或公开演示。",
+      "access": {
+        "method": "public_web_page",
+        "authentication": "none",
+        "cost": "not_stated",
+        "endpoint": "https://www.nmc.cn/publish/radar.html"
+      },
+      "licensing": {
+        "license_name": "国家气象中心网站声明",
+        "license_url": "https://www.nmc.cn/publish/radar.html",
+        "attribution_required": true,
+        "attribution_text": "国家气象中心",
+        "permissions": {
+          "local_research": "prohibited",
+          "public_portfolio": "prohibited",
+          "production": "prohibited",
+          "redistribution": "prohibited"
+        }
+      },
+      "freshness": {
+        "mode": "scheduled",
+        "expected_interval_minutes": 6,
+        "typical_latency_minutes": null,
+        "expires_after_minutes": 18,
+        "policy_basis": "页面产品时次通常相隔 6 分钟；18 分钟是 SkyCast 三帧过期策略，不是官方 SLA。"
+      },
+      "evidence": [
+        {
+          "url": "https://www.nmc.cn/publish/radar.html",
+          "claim": "页面展示约 6 分钟间隔的雷达拼图，并声明未经授权禁止下载使用。",
+          "verified_at": "2026-08-27"
+        }
+      ],
+      "fallback": "仅使用仓库内自有或获授权的历史合成事件包，并标注非实时官方雷达。",
+      "risk_note": "可在浏览器查看不代表拥有程序化获取或再分发权。"
+    },
+    {
+      "source_id": "cma:data-service:radar-composite-reflectivity",
+      "provider": "中国气象局国家气象信息中心",
+      "product": "天气雷达组网组合反射率图像产品",
+      "category": "radar",
+      "admission_status": "restricted",
+      "decision_summary": "个人或单位实名注册后可访问；公开展示、缓存和派生产品边界需书面确认。",
+      "access": {
+        "method": "registered_portal",
+        "authentication": "verified_account",
+        "cost": "not_stated",
+        "endpoint": "https://k.data.cma.cn/mekb/?dataCode=J.0019.0010.S001&r=data%2Fdetail"
+      },
+      "licensing": {
+        "license_name": "中国气象数据服务实名共享规则",
+        "license_url": "https://k.data.cma.cn/mekb/?dataCode=J.0019.0010.S001&r=data%2Fdetail",
+        "attribution_required": true,
+        "attribution_text": "中国气象局气象探测中心 / 国家气象信息中心",
+        "permissions": {
+          "local_research": "conditional",
+          "public_portfolio": "conditional",
+          "production": "conditional",
+          "redistribution": "prohibited"
+        }
+      },
+      "freshness": {
+        "mode": "scheduled",
+        "expected_interval_minutes": 6,
+        "typical_latency_minutes": null,
+        "expires_after_minutes": 18,
+        "policy_basis": "官方目录标明产品实时制作、近 24 小时和 6 分钟分辨率；18 分钟为 SkyCast 三帧过期策略。"
+      },
+      "evidence": [
+        {
+          "url": "https://k.data.cma.cn/mekb/?dataCode=J.0019.0010.S001&r=data%2Fdetail",
+          "claim": "官方目录列出实时雷达组网组合反射率产品，并要求个人或单位实名注册访问。",
+          "verified_at": "2026-08-27"
+        },
+        {
+          "url": "https://k.data.cma.cn/mekb/?dataCode=J.0017.0010.S001&r=data%2Fdetail",
+          "claim": "基本反射率拼图产品的官方目录标明 0.01 度网格和每 6 分钟更新。",
+          "verified_at": "2026-08-27"
+        }
+      ],
+      "fallback": "申请获批前使用自有合成历史事件包；获批后仍需按书面答复限制缓存和展示。",
+      "risk_note": "账号下载权限不能替代公开展示、二次分发或商业使用授权。"
+    },
+    {
+      "source_id": "cma:smart-weather-api:official-alerts",
+      "provider": "中国气象局公共气象服务中心",
+      "product": "SmartWeatherAPI 官方预警信息",
+      "category": "official_alert",
+      "admission_status": "blocked",
+      "decision_summary": "官方页面公布的专用申请邮箱已退信；确认新的有效申请通道前不接入。",
+      "access": {
+        "method": "application_api",
+        "authentication": "approved_application",
+        "cost": "contact_provider",
+        "endpoint": "https://www.weather.com.cn/wzfw/smart/weatherapi.shtml"
+      },
+      "licensing": {
+        "license_name": "SmartWeatherAPI 审核授权及中国天气网版权声明",
+        "license_url": "https://www.weather.com.cn/wzfw/banquan.shtml",
+        "attribution_required": true,
+        "attribution_text": "中国气象局公共气象服务中心",
+        "permissions": {
+          "local_research": "prohibited",
+          "public_portfolio": "prohibited",
+          "production": "prohibited",
+          "redistribution": "prohibited"
+        }
+      },
+      "freshness": {
+        "mode": "event_driven",
+        "expected_interval_minutes": null,
+        "typical_latency_minutes": null,
+        "expires_after_minutes": null,
+        "policy_basis": "使用官方预警的 issuedAt 与 expiresAt；目录不虚构固定发布频率。"
+      },
+      "evidence": [
+        {
+          "url": "https://www.weather.com.cn/wzfw/smart/weatherapi.shtml",
+          "claim": "官方平台包含预警、雷达和云图，接口必须提交申请并通过审核。",
+          "verified_at": "2026-08-27"
+        },
+        {
+          "url": "https://www.weather.com.cn/wzfw/banquan.shtml",
+          "claim": "未经书面许可不得复制、展示、利用或镜像网站内容和服务。",
+          "verified_at": "2026-08-27"
+        },
+        {
+          "url": "https://www.weather.com.cn/wzfw/contact.shtml",
+          "claim": "当前客服页面提供 service@weather.com.cn 和 400-6000-121，可用于确认后续申请渠道。",
+          "verified_at": "2026-08-27"
+        }
+      ],
+      "fallback": "仅展示产品内置的无官方预警状态，不转述第三方抓取内容。",
+      "risk_note": "2026-08-27 实测公开申请邮箱返回 550；不得把 AI 结果包装成官方预警。"
+    },
+    {
+      "source_id": "cma:nsmc:fy4b-agri-l1",
+      "provider": "国家卫星气象中心",
+      "product": "FY-4B AGRI L1 数据",
+      "category": "satellite",
+      "admission_status": "restricted",
+      "decision_summary": "实名注册审核后可检索下载；公开再分发和商业使用边界需另行书面确认。",
+      "access": {
+        "method": "registered_portal",
+        "authentication": "verified_account",
+        "cost": "not_stated",
+        "endpoint": "https://satellite.nsmc.org.cn/DataPortal/cn/data/dataset.html?satelliteCode=FY4B"
+      },
+      "licensing": {
+        "license_name": "风云卫星遥感数据服务网注册与数据管理要求",
+        "license_url": "https://satellite.nsmc.org.cn/DataPortal/cn/support/faq.html",
+        "attribution_required": true,
+        "attribution_text": "国家卫星气象中心（国家空间天气监测预警中心）",
+        "permissions": {
+          "local_research": "conditional",
+          "public_portfolio": "conditional",
+          "production": "conditional",
+          "redistribution": "prohibited"
+        }
+      },
+      "freshness": {
+        "mode": "scheduled",
+        "expected_interval_minutes": null,
+        "typical_latency_minutes": null,
+        "expires_after_minutes": null,
+        "policy_basis": "候选产品和订单类型较多，取得具体产品授权后再登记频率、延迟和过期策略。"
+      },
+      "evidence": [
+        {
+          "url": "https://satellite.nsmc.org.cn/DataPortal/cn/support/faq.html",
+          "claim": "在线下载气象卫星资料需要实名信息，订单时效随在线、近线和离线存储而变化。",
+          "verified_at": "2026-08-27"
+        },
+        {
+          "url": "https://satellite.nsmc.org.cn/DataPortal/cn/data/structure.html",
+          "claim": "门户提供 FY-4B 等产品检索，下载前需要注册审核。",
+          "verified_at": "2026-08-27"
+        }
+      ],
+      "fallback": "使用自有合成云图或已获明确演示授权的裁剪样例，禁止提交账号和原始受限数据。",
+      "risk_note": "注册可下载不等于自动取得公开再分发权，发布前必须保存书面授权依据。"
+    }
+  ]
+}
