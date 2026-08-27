@@ -18,6 +18,8 @@ HOURLY_FIELDS = (
     "visibility",
 )
 
+SOURCE_ID = "open-meteo:forecast"
+
 
 class OpenMeteoWeatherProvider:
     def __init__(self, base_url: str = OPEN_METEO_URL, timeout_seconds: float = 8.0) -> None:
@@ -74,7 +76,7 @@ class OpenMeteoWeatherProvider:
                     ][nearest_index],
                     visibility_meters=hourly["visibility"][nearest_index],
                     relative_humidity_percent=hourly["relative_humidity_2m"][nearest_index],
-                    source_id="open-meteo:forecast",
+                    source_id=SOURCE_ID,
                     source_url=source_url,
                     retrieved_at=retrieved_at,
                 )

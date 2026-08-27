@@ -19,7 +19,7 @@
   └─ 地图与道路
           │
           ▼
-Provider Adapters → Quality Control → Normalized Observations
+Admission Catalog → Provider Adapters → Quality Control → Normalized Observations
           │                              │
           │                              ├─ Object Storage（栅格）
           │                              ├─ PostGIS（时空对象）
@@ -94,6 +94,10 @@ server/app/models        数值模型与评估
 server/app/api           REST/WebSocket
 server/tests             单元、契约、历史回放测试
 ```
+
+所有 Provider 必须先在 `data/catalog/data_sources.v1.json` 登记，并通过
+`tools/validate_data_sources.py` 校验。只有 `approved` 来源可以启用；`restricted` 来源需要
+完成申请或书面确认后重新评审；`blocked` 来源不得通过网页抓取或隐藏接口绕过准入门禁。
 
 首批API：
 
