@@ -1,6 +1,8 @@
 package com.yy21120.skycast.ui
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -14,8 +16,10 @@ import com.yy21120.skycast.data.OpportunityDataSource
 import com.yy21120.skycast.data.OpportunityResult
 import com.yy21120.skycast.data.SourceReference
 import com.yy21120.skycast.data.SunsetOpportunity
+import com.yy21120.skycast.data.SunsetOutcome
 import com.yy21120.skycast.ui.theme.SkyCastTheme
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -78,6 +82,40 @@ class SkyCastNavigationTest {
 
         composeRule.onNodeWithText("评估不存在").assertIsDisplayed()
         composeRule.onNodeWithText("返回机会列表").assertIsDisplayed()
+    }
+
+    @Test
+    fun failedFeedbackKeepsInputAndOffersRetry() {
+        val actions = mutableListOf<FeedbackAction>()
+        composeRule.setContent {
+            SkyCastTheme {
+                FeedbackSection(
+                    state = FeedbackUiState(
+                        sceneId = "wuhan-sunset-2026-08-26",
+                        clientFeedbackId = "5215a6f3-bace-45df-ae86-9de854f6fc64",
+                        formVisible = true,
+                        outcome = SunsetOutcome.VIVID,
+                        shootingQuality = 5,
+                        notes = "东湖边明显染色",
+                        submissionStatus = FeedbackSubmissionStatus.Error(
+                            "提交超时，内容已保留，请重新提交。",
+                        ),
+                    ),
+                    onAction = { actions += it },
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("记录晚霞实况").assertIsDisplayed()
+        composeRule.onNodeWithText("东湖边明显染色").assertIsDisplayed()
+        composeRule.onNodeWithText("提交超时，内容已保留，请重新提交。").assertIsDisplayed()
+        composeRule
+            .onNode(hasText("重新提交") and hasClickAction())
+            .assertIsEnabled()
+            .performClick()
+        composeRule.runOnIdle {
+            assertTrue(actions.contains(FeedbackAction.Submit))
+        }
     }
 
     private fun cachedResult(): OpportunityResult = OpportunityResult(

@@ -14,10 +14,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -28,6 +31,7 @@ import com.yy21120.skycast.data.AssessmentFactor
 import com.yy21120.skycast.data.OpportunityResult
 import com.yy21120.skycast.data.SourceReference
 import com.yy21120.skycast.data.SunsetOpportunity
+import com.yy21120.skycast.data.SunsetOutcome
 import java.time.ZoneId
 import kotlin.math.abs
 
@@ -38,6 +42,8 @@ internal fun OpportunityDetailScreen(
     onBack: () -> Unit,
     onRetry: () -> Unit,
     onOpenSource: (String) -> Unit,
+    feedbackState: FeedbackUiState = FeedbackUiState(),
+    onFeedbackAction: (FeedbackAction) -> Unit = {},
 ) {
     if (opportunity == null) {
         MissingOpportunityContent(onBack)
@@ -47,6 +53,9 @@ internal fun OpportunityDetailScreen(
     val response = result.response
     val cityZoneId = zoneIdOrDefault(response.city.timezone)
     val style = recommendationStyle(opportunity.recommendation)
+    LaunchedEffect(opportunity.sceneId) {
+        onFeedbackAction(FeedbackAction.SceneSelected(opportunity.sceneId))
+    }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -108,6 +117,13 @@ internal fun OpportunityDetailScreen(
                     Text(opportunity.summary)
                 }
             }
+        }
+
+        item {
+            FeedbackSection(
+                state = feedbackState,
+                onAction = onFeedbackAction,
+            )
         }
 
         item {
@@ -175,6 +191,185 @@ internal fun OpportunityDetailScreen(
             )
         }
     }
+}
+
+@Composable
+internal fun FeedbackSection(
+    state: FeedbackUiState,
+    onAction: (FeedbackAction) -> Unit,
+) {
+    when {
+        state.submissionStatus is FeedbackSubmissionStatus.Success -> {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text("反馈已提交", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text("感谢你帮助 SkyCast 验证和改进晚霞评估。")
+                }
+            }
+        }
+
+        !state.formVisible -> {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Text("实际看到了怎样的晚霞？", fontWeight = FontWeight.Bold)
+                    Text(
+                        "记录现场结果，帮助后续验证评分并改进模型。",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Button(
+                        onClick = { onAction(FeedbackAction.ShowForm) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text("记录实况")
+                    }
+                }
+            }
+        }
+
+        else -> FeedbackForm(state, onAction)
+    }
+}
+
+@Composable
+private fun FeedbackForm(
+    state: FeedbackUiState,
+    onAction: (FeedbackAction) -> Unit,
+) {
+    val isSubmitting = state.submissionStatus is FeedbackSubmissionStatus.Submitting
+    Card(
+        modifier = Modifier.testTag("feedback-form"),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        shape = RoundedCornerShape(16.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text("记录晚霞实况", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text("晚霞表现", style = MaterialTheme.typography.labelLarge)
+            FeedbackOutcomeChip(
+                label = "明显晚霞",
+                outcome = SunsetOutcome.VIVID,
+                selected = state.outcome,
+                enabled = !isSubmitting,
+                onAction = onAction,
+            )
+            FeedbackOutcomeChip(
+                label = "普通晚霞",
+                outcome = SunsetOutcome.VISIBLE,
+                selected = state.outcome,
+                enabled = !isSubmitting,
+                onAction = onAction,
+            )
+            FeedbackOutcomeChip(
+                label = "未出现",
+                outcome = SunsetOutcome.NOT_VISIBLE,
+                selected = state.outcome,
+                enabled = !isSubmitting,
+                onAction = onAction,
+            )
+
+            Text("拍摄质量（1 低—5 高）", style = MaterialTheme.typography.labelLarge)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                (1..5).forEach { quality ->
+                    FilterChip(
+                        selected = state.shootingQuality == quality,
+                        onClick = { onAction(FeedbackAction.QualitySelected(quality)) },
+                        label = { Text(quality.toString()) },
+                        enabled = !isSubmitting,
+                    )
+                }
+            }
+
+            OutlinedTextField(
+                value = state.notes,
+                onValueChange = { onAction(FeedbackAction.NotesChanged(it)) },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isSubmitting,
+                label = { Text("现场备注（可选）") },
+                supportingText = { Text("${state.notes.length}/200") },
+                minLines = 3,
+                maxLines = 5,
+            )
+            Text(
+                "请勿填写姓名、手机号、精确位置或其他个人敏感信息。",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            val error = state.submissionStatus as? FeedbackSubmissionStatus.Error
+            if (error != null) {
+                Text(
+                    error.message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                TextButton(
+                    onClick = { onAction(FeedbackAction.HideForm) },
+                    enabled = !isSubmitting,
+                ) {
+                    Text("取消")
+                }
+                Button(
+                    onClick = { onAction(FeedbackAction.Submit) },
+                    enabled = state.canSubmit,
+                ) {
+                    Text(
+                        when {
+                            isSubmitting -> "提交中…"
+                            error != null -> "重新提交"
+                            else -> "提交反馈"
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FeedbackOutcomeChip(
+    label: String,
+    outcome: SunsetOutcome,
+    selected: SunsetOutcome?,
+    enabled: Boolean,
+    onAction: (FeedbackAction) -> Unit,
+) {
+    FilterChip(
+        selected = selected == outcome,
+        onClick = { onAction(FeedbackAction.OutcomeSelected(outcome)) },
+        label = { Text(label) },
+        enabled = enabled,
+        modifier = Modifier.fillMaxWidth(),
+    )
 }
 
 @Composable

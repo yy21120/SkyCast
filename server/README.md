@@ -1,6 +1,6 @@
 # SkyCast Server
 
-第一条纵向切片提供武汉晚霞机会评估：
+当前纵向切片提供武汉晚霞机会评估和实况结果反馈：
 
 ```text
 天气 Provider → 日落时刻特征 → 可解释规则评分 → FastAPI → 客户端机会卡
@@ -23,6 +23,32 @@ python -m uvicorn app.main:app --reload
 - `http://127.0.0.1:8000/docs`
 - `http://127.0.0.1:8000/v1/cities/wuhan/opportunities?mode=replay&days=3`
 - `http://127.0.0.1:8000/v1/cities/wuhan/opportunities?mode=live&days=3`
+
+## 晚霞实况反馈
+
+提交反馈：
+
+```http
+POST /v1/feedback/sunset
+Content-Type: application/json
+```
+
+```json
+{
+  "client_feedback_id": "5215a6f3-bace-45df-ae86-9de854f6fc64",
+  "scene_id": "wuhan-sunset-2026-08-27",
+  "outcome": "vivid",
+  "shooting_quality": 5,
+  "notes": "东湖边可以看到明显染色。",
+  "submitted_at": "2026-08-27T19:20:00+08:00"
+}
+```
+
+`outcome` 支持 `vivid`、`visible` 和 `not_visible`。`shooting_quality` 必须为 1～5，备注可省略且最多 200 字。
+
+开发环境默认保存到 `server/var/skycast.db`。此目录不会提交到 Git。相同 `client_feedback_id` 和相同内容可安全重试；同一 ID 对应不同内容时返回 HTTP 409。
+
+反馈接口不要求或存储姓名、手机号、精确位置和设备唯一标识。备注属于用户主动输入，产品界面应提醒用户不要填写个人敏感信息。
 
 ## 数据与结论边界
 

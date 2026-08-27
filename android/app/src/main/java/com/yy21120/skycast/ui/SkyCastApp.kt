@@ -25,8 +25,12 @@ internal data object OpportunityListRoute
 internal data class OpportunityDetailRoute(val sceneId: String)
 
 @Composable
-fun SkyCastApp(viewModel: OpportunityViewModel) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+fun SkyCastApp(
+    opportunityViewModel: OpportunityViewModel,
+    feedbackViewModel: FeedbackViewModel,
+) {
+    val uiState by opportunityViewModel.uiState.collectAsStateWithLifecycle()
+    val feedbackState by feedbackViewModel.uiState.collectAsStateWithLifecycle()
     val navController = rememberNavController()
     val context = LocalContext.current
 
@@ -35,12 +39,14 @@ fun SkyCastApp(viewModel: OpportunityViewModel) {
             OpportunityUiState.Loading -> LoadingContent()
             is OpportunityUiState.Error -> ErrorContent(
                 message = state.message,
-                onRetry = viewModel::refresh,
+                onRetry = opportunityViewModel::refresh,
             )
             is OpportunityUiState.Success -> SkyCastNavHost(
                 result = state.result,
-                onRetry = viewModel::refresh,
+                onRetry = opportunityViewModel::refresh,
                 onOpenSource = { url -> openSourceUrl(context, url) },
+                feedbackState = feedbackState,
+                onFeedbackAction = feedbackViewModel::onAction,
                 navController = navController,
             )
         }
@@ -52,6 +58,8 @@ internal fun SkyCastNavHost(
     result: OpportunityResult,
     onRetry: () -> Unit,
     onOpenSource: (String) -> Unit,
+    feedbackState: FeedbackUiState = FeedbackUiState(),
+    onFeedbackAction: (FeedbackAction) -> Unit = {},
     navController: NavHostController = rememberNavController(),
 ) {
     fun returnToList() {
@@ -83,6 +91,8 @@ internal fun SkyCastNavHost(
                 onBack = ::returnToList,
                 onRetry = onRetry,
                 onOpenSource = onOpenSource,
+                feedbackState = feedbackState,
+                onFeedbackAction = onFeedbackAction,
             )
         }
     }
