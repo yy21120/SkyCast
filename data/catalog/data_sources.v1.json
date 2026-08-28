@@ -1,8 +1,50 @@
 {
   "schema_version": 1,
-  "catalog_verified_at": "2026-08-27",
+  "catalog_verified_at": "2026-08-28",
   "review_after_days": 180,
   "sources": [
+    {
+      "source_id": "skycast:synthetic-radar:wuhan-v1",
+      "provider": "SkyCast",
+      "product": "武汉合成强对流雷达回放 v1",
+      "category": "radar",
+      "admission_status": "approved",
+      "decision_summary": "仓库自有确定性合成数据，可用于开发、测试和非商业作品集演示。",
+      "access": {
+        "method": "generated_fixture",
+        "authentication": "none",
+        "cost": "repository_owned",
+        "endpoint": "https://github.com/yy21120/SkyCast/tree/main/data/sample/wuhan/radar_synthetic_v1"
+      },
+      "licensing": {
+        "license_name": "SkyCast repository-owned synthetic fixture",
+        "license_url": "https://github.com/yy21120/SkyCast",
+        "attribution_required": true,
+        "attribution_text": "SkyCast 历史合成回放，非实时官方雷达",
+        "permissions": {
+          "local_research": "allowed",
+          "public_portfolio": "allowed",
+          "production": "prohibited",
+          "redistribution": "allowed"
+        }
+      },
+      "freshness": {
+        "mode": "static_replay",
+        "expected_interval_minutes": 6,
+        "typical_latency_minutes": null,
+        "expires_after_minutes": null,
+        "policy_basis": "固定历史回放包不声明实时新鲜度；6 分钟仅表示相邻合成帧间隔。"
+      },
+      "evidence": [
+        {
+          "url": "https://github.com/yy21120/SkyCast/blob/main/tools/build_synthetic_radar_event.py",
+          "claim": "事件由仓库内固定种子生成器创建，不使用第三方雷达图片或文件。",
+          "verified_at": "2026-08-27"
+        }
+      ],
+      "fallback": "生成或校验失败时禁用雷达回放，不降级为未经授权的网页雷达。",
+      "risk_note": "合成事件不代表武汉真实天气，不可用于防灾决策或实际追风导航。"
+    },
     {
       "source_id": "open-meteo:forecast",
       "provider": "Open-Meteo",
@@ -103,12 +145,14 @@
       "product": "天气雷达组网组合反射率图像产品",
       "category": "radar",
       "admission_status": "restricted",
-      "decision_summary": "个人或单位实名注册后可访问；公开展示、缓存和派生产品边界需书面确认。",
+      "decision_summary": "官方客服已确认雷达产品目录和数据接口市场为申请入口；能否调用取决于具体产品共享级别，公开展示、缓存和派生产品边界仍需书面确认。",
       "access": {
         "method": "registered_portal",
         "authentication": "verified_account",
         "cost": "not_stated",
-        "endpoint": "https://k.data.cma.cn/mekb/?dataCode=J.0019.0010.S001&r=data%2Fdetail"
+        "endpoint": "https://k.data.cma.cn/mekb/?dataCode=J.0019.0010.S001&r=data%2Fdetail",
+        "product_category_url": "https://data.cma.cn/data-service/category/7/70102",
+        "api_marketplace_url": "https://data.cma.cn/cmaOld/Market/MarketList.html"
       },
       "licensing": {
         "license_name": "中国气象数据服务实名共享规则",
@@ -139,6 +183,16 @@
           "url": "https://k.data.cma.cn/mekb/?dataCode=J.0017.0010.S001&r=data%2Fdetail",
           "claim": "基本反射率拼图产品的官方目录标明 0.01 度网格和每 6 分钟更新。",
           "verified_at": "2026-08-27"
+        },
+        {
+          "url": "https://data.cma.cn/data-service/category/7/70102",
+          "claim": "中国气象数据网客服于 2026-08-28 确认该天气雷达气象观测产品目录为共享级别和权限核验入口。",
+          "verified_at": "2026-08-28"
+        },
+        {
+          "url": "https://data.cma.cn/cmaOld/Market/MarketList.html",
+          "claim": "中国气象数据网客服于 2026-08-28 提供该官方数据接口市场入口；具体接口资格仍需按产品申请确认。",
+          "verified_at": "2026-08-28"
         }
       ],
       "fallback": "申请获批前使用自有合成历史事件包；获批后仍需按书面答复限制缓存和展示。",

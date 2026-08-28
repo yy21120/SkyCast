@@ -14,6 +14,7 @@ SkyCast 是一款面向风光、天文与强天气摄影场景的 AI 气象决�
 - Android 已支持机会卡、可追溯详情、离线缓存和实况结果反馈；
 - 服务端已支持 SQLite 反馈持久化和客户端幂等重试；
 - 数据源准入目录已覆盖天气预报、官方预警、雷达和 FY-4 卫星候选来源；
+- 武汉强对流合成事件包和可替换 RadarProvider 已建立；
 - Git 仓库采用 GitHub Flow 和 Conventional Commits。
 
 ## 文档入口
@@ -22,6 +23,7 @@ SkyCast 是一款面向风光、天文与强天气摄影场景的 AI 气象决�
 - [MVP PRD](docs/PRD_MVP.md)
 - [技术架构](docs/ARCHITECTURE.md)
 - [数据源准入与公开演示边界](docs/DATA_SOURCE_ADMISSION.md)
+- [武汉合成雷达回放契约](docs/RADAR_REPLAY_CONTRACT.md)
 - [Git 实战工作流](docs/GIT_WORKFLOW.md)
 - [产品待办](docs/BACKLOG.md)
 

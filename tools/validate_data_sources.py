@@ -17,11 +17,22 @@ CATALOG_PATH = (
 SOURCE_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*(?::[a-z0-9][a-z0-9-]*)+$")
 ADMISSION_STATUSES = {"approved", "restricted", "blocked"}
 CATEGORIES = {"weather_forecast", "radar", "official_alert", "satellite"}
-ACCESS_METHODS = {"public_api", "public_web_page", "application_api", "registered_portal"}
+ACCESS_METHODS = {
+    "public_api",
+    "public_web_page",
+    "application_api",
+    "registered_portal",
+    "generated_fixture",
+}
 AUTHENTICATION_MODES = {"none", "approved_application", "verified_account"}
-COST_MODES = {"free_non_commercial", "not_stated", "contact_provider"}
+COST_MODES = {
+    "free_non_commercial",
+    "not_stated",
+    "contact_provider",
+    "repository_owned",
+}
 PERMISSIONS = {"allowed", "conditional", "prohibited"}
-FRESHNESS_MODES = {"scheduled", "event_driven"}
+FRESHNESS_MODES = {"scheduled", "event_driven", "static_replay"}
 USE_CASES = {"local_research", "public_portfolio", "production", "redistribution"}
 
 
@@ -115,7 +126,11 @@ def _validate_freshness(freshness: object, status: object, path: str, errors: li
         errors.append(f"{path}.expected_interval_minutes is required for scheduled data")
     if mode == "event_driven" and freshness["expected_interval_minutes"] is not None:
         errors.append(f"{path}.expected_interval_minutes must be null for event-driven data")
-    if status == "approved" and freshness["expires_after_minutes"] is None:
+    if (
+        status == "approved"
+        and mode != "static_replay"
+        and freshness["expires_after_minutes"] is None
+    ):
         errors.append(f"{path}.expires_after_minutes is required for an approved source")
     if not isinstance(freshness["policy_basis"], str) or not freshness["policy_basis"].strip():
         errors.append(f"{path}.policy_basis must be a non-empty string")

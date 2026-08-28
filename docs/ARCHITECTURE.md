@@ -99,6 +99,10 @@ server/tests             单元、契约、历史回放测试
 `tools/validate_data_sources.py` 校验。只有 `approved` 来源可以启用；`restricted` 来源需要
 完成申请或书面确认后重新评审；`blocked` 来源不得通过网页抓取或隐藏接口绕过准入门禁。
 
+雷达领域通过 `RadarProvider` 隔离数据来源。当前只启用确定性的
+`SyntheticReplayRadarProvider`；未来 CMA Provider 必须输出同一 RadarEvent、RadarFrame 和
+RadarFrameData 契约。Provider 选择属于服务端装配，客户端不持有数据方凭据。
+
 首批API：
 
 ```text
