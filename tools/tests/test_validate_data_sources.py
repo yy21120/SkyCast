@@ -9,6 +9,10 @@ def valid_catalog() -> dict:
     return load_catalog()
 
 
+def source(catalog: dict, source_id: str) -> dict:
+    return next(item for item in catalog["sources"] if item["source_id"] == source_id)
+
+
 def test_repository_catalog_is_valid() -> None:
     assert validate_catalog(valid_catalog()) == []
 
@@ -33,7 +37,7 @@ def test_source_without_official_evidence_is_rejected() -> None:
 
 def test_blocked_source_cannot_allow_public_portfolio_use() -> None:
     catalog = valid_catalog()
-    radar = catalog["sources"][1]
+    radar = source(catalog, "cma:nmc-radar-mosaic:web")
     radar["licensing"]["permissions"]["public_portfolio"] = "allowed"
 
     errors = validate_catalog(catalog)
@@ -43,7 +47,8 @@ def test_blocked_source_cannot_allow_public_portfolio_use() -> None:
 
 def test_scheduled_source_requires_update_interval() -> None:
     catalog = valid_catalog()
-    catalog["sources"][0]["freshness"]["expected_interval_minutes"] = None
+    open_meteo = source(catalog, "open-meteo:forecast")
+    open_meteo["freshness"]["expected_interval_minutes"] = None
 
     errors = validate_catalog(catalog)
 
@@ -52,7 +57,8 @@ def test_scheduled_source_requires_update_interval() -> None:
 
 def test_attribution_text_is_required_when_attribution_is_enabled() -> None:
     catalog = valid_catalog()
-    catalog["sources"][0]["licensing"]["attribution_text"] = ""
+    open_meteo = source(catalog, "open-meteo:forecast")
+    open_meteo["licensing"]["attribution_text"] = ""
 
     errors = validate_catalog(catalog)
 

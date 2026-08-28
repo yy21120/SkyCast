@@ -1,0 +1,472 @@
+{
+  "schema_version": 1,
+  "event_id": "wuhan-synthetic-convection-v1",
+  "title": "武汉合成强对流回放 v1",
+  "city_id": "wuhan",
+  "display_timezone": "Asia/Shanghai",
+  "source_id": "skycast:synthetic-radar:wuhan-v1",
+  "interval_minutes": 6,
+  "synthetic_seed": 21120,
+  "synthetic": true,
+  "official": false,
+  "disclaimer": "历史合成回放，非实时官方雷达，不用于防灾决策或实际追风导航。",
+  "package_checksum_sha256": "bf8d3d11cca27b2e0b5ca49e39d5e832a2e5b0692b5f3fb3b1f765d61be16412",
+  "frames": [
+    {
+      "schema_version": 1,
+      "event_id": "wuhan-synthetic-convection-v1",
+      "frame_id": "frame-000",
+      "observed_at": "2026-07-15T07:00:00Z",
+      "ingested_at": "2026-07-15T07:02:00Z",
+      "expires_at": "2026-07-15T07:20:00Z",
+      "source_id": "skycast:synthetic-radar:wuhan-v1",
+      "product": "composite_reflectivity",
+      "unit": "dBZ",
+      "crs": "EPSG:4326",
+      "bounding_box": {
+        "west": 113.2,
+        "south": 29.6,
+        "east": 115.2,
+        "north": 31.6
+      },
+      "grid": {
+        "width": 80,
+        "height": 80,
+        "resolution_longitude_degrees": 0.025,
+        "resolution_latitude_degrees": 0.025,
+        "encoding": "uint8-dbz-v1",
+        "nodata_value": 255
+      },
+      "data_uri": "frames/frame-000.bin",
+      "checksum_sha256": "b95e7bcdf20b77f22d49b2410a4e3bb64ee5815221d5d5120b2d5b9db37e52c0",
+      "max_reflectivity_dbz": 61,
+      "storm_centroid": {
+        "longitude": 113.6625,
+        "latitude": 30.0375
+      },
+      "quality_flags": [
+        "complete"
+      ],
+      "synthetic": true,
+      "official": false
+    },
+    {
+      "schema_version": 1,
+      "event_id": "wuhan-synthetic-convection-v1",
+      "frame_id": "frame-001",
+      "observed_at": "2026-07-15T07:06:00Z",
+      "ingested_at": "2026-07-15T07:08:00Z",
+      "expires_at": "2026-07-15T07:26:00Z",
+      "source_id": "skycast:synthetic-radar:wuhan-v1",
+      "product": "composite_reflectivity",
+      "unit": "dBZ",
+      "crs": "EPSG:4326",
+      "bounding_box": {
+        "west": 113.2,
+        "south": 29.6,
+        "east": 115.2,
+        "north": 31.6
+      },
+      "grid": {
+        "width": 80,
+        "height": 80,
+        "resolution_longitude_degrees": 0.025,
+        "resolution_latitude_degrees": 0.025,
+        "encoding": "uint8-dbz-v1",
+        "nodata_value": 255
+      },
+      "data_uri": "frames/frame-001.bin",
+      "checksum_sha256": "2082c22db21ec2a131d19ff75bbc5f3926c6d474310f221d6dd86827c75265b8",
+      "max_reflectivity_dbz": 62,
+      "storm_centroid": {
+        "longitude": 113.7375,
+        "latitude": 30.0875
+      },
+      "quality_flags": [
+        "complete"
+      ],
+      "synthetic": true,
+      "official": false
+    },
+    {
+      "schema_version": 1,
+      "event_id": "wuhan-synthetic-convection-v1",
+      "frame_id": "frame-002",
+      "observed_at": "2026-07-15T07:12:00Z",
+      "ingested_at": "2026-07-15T07:14:00Z",
+      "expires_at": "2026-07-15T07:32:00Z",
+      "source_id": "skycast:synthetic-radar:wuhan-v1",
+      "product": "composite_reflectivity",
+      "unit": "dBZ",
+      "crs": "EPSG:4326",
+      "bounding_box": {
+        "west": 113.2,
+        "south": 29.6,
+        "east": 115.2,
+        "north": 31.6
+      },
+      "grid": {
+        "width": 80,
+        "height": 80,
+        "resolution_longitude_degrees": 0.025,
+        "resolution_latitude_degrees": 0.025,
+        "encoding": "uint8-dbz-v1",
+        "nodata_value": 255
+      },
+      "data_uri": "frames/frame-002.bin",
+      "checksum_sha256": "e64141e7fd531abba93135fb1e53751d7002e3a71b60faea87ef365de738c035",
+      "max_reflectivity_dbz": 61,
+      "storm_centroid": {
+        "longitude": 113.8125,
+        "latitude": 30.1375
+      },
+      "quality_flags": [
+        "complete"
+      ],
+      "synthetic": true,
+      "official": false
+    },
+    {
+      "schema_version": 1,
+      "event_id": "wuhan-synthetic-convection-v1",
+      "frame_id": "frame-003",
+      "observed_at": "2026-07-15T07:18:00Z",
+      "ingested_at": "2026-07-15T07:20:00Z",
+      "expires_at": "2026-07-15T07:38:00Z",
+      "source_id": "skycast:synthetic-radar:wuhan-v1",
+      "product": "composite_reflectivity",
+      "unit": "dBZ",
+      "crs": "EPSG:4326",
+      "bounding_box": {
+        "west": 113.2,
+        "south": 29.6,
+        "east": 115.2,
+        "north": 31.6
+      },
+      "grid": {
+        "width": 80,
+        "height": 80,
+        "resolution_longitude_degrees": 0.025,
+        "resolution_latitude_degrees": 0.025,
+        "encoding": "uint8-dbz-v1",
+        "nodata_value": 255
+      },
+      "data_uri": "frames/frame-003.bin",
+      "checksum_sha256": "7f8c563e2ef45bc2fb02ef94a36f4393630cba206d5337ab29610f1eb38ebc91",
+      "max_reflectivity_dbz": 63,
+      "storm_centroid": {
+        "longitude": 113.8875,
+        "latitude": 30.1875
+      },
+      "quality_flags": [
+        "complete"
+      ],
+      "synthetic": true,
+      "official": false
+    },
+    {
+      "schema_version": 1,
+      "event_id": "wuhan-synthetic-convection-v1",
+      "frame_id": "frame-004",
+      "observed_at": "2026-07-15T07:24:00Z",
+      "ingested_at": "2026-07-15T07:26:00Z",
+      "expires_at": "2026-07-15T07:44:00Z",
+      "source_id": "skycast:synthetic-radar:wuhan-v1",
+      "product": "composite_reflectivity",
+      "unit": "dBZ",
+      "crs": "EPSG:4326",
+      "bounding_box": {
+        "west": 113.2,
+        "south": 29.6,
+        "east": 115.2,
+        "north": 31.6
+      },
+      "grid": {
+        "width": 80,
+        "height": 80,
+        "resolution_longitude_degrees": 0.025,
+        "resolution_latitude_degrees": 0.025,
+        "encoding": "uint8-dbz-v1",
+        "nodata_value": 255
+      },
+      "data_uri": "frames/frame-004.bin",
+      "checksum_sha256": "c142402fc506c57de721bd0f576790d2a313117a61c630280cdac3b8910bd8bf",
+      "max_reflectivity_dbz": 62,
+      "storm_centroid": {
+        "longitude": 113.9625,
+        "latitude": 30.2375
+      },
+      "quality_flags": [
+        "complete"
+      ],
+      "synthetic": true,
+      "official": false
+    },
+    {
+      "schema_version": 1,
+      "event_id": "wuhan-synthetic-convection-v1",
+      "frame_id": "frame-005",
+      "observed_at": "2026-07-15T07:30:00Z",
+      "ingested_at": "2026-07-15T07:32:00Z",
+      "expires_at": "2026-07-15T07:50:00Z",
+      "source_id": "skycast:synthetic-radar:wuhan-v1",
+      "product": "composite_reflectivity",
+      "unit": "dBZ",
+      "crs": "EPSG:4326",
+      "bounding_box": {
+        "west": 113.2,
+        "south": 29.6,
+        "east": 115.2,
+        "north": 31.6
+      },
+      "grid": {
+        "width": 80,
+        "height": 80,
+        "resolution_longitude_degrees": 0.025,
+        "resolution_latitude_degrees": 0.025,
+        "encoding": "uint8-dbz-v1",
+        "nodata_value": 255
+      },
+      "data_uri": "frames/frame-005.bin",
+      "checksum_sha256": "879fa9172afec924aed7ce077e1c21a4b297ee9afa32c5e86c929cb5f5a8071f",
+      "max_reflectivity_dbz": 63,
+      "storm_centroid": {
+        "longitude": 114.0375,
+        "latitude": 30.2875
+      },
+      "quality_flags": [
+        "complete"
+      ],
+      "synthetic": true,
+      "official": false
+    },
+    {
+      "schema_version": 1,
+      "event_id": "wuhan-synthetic-convection-v1",
+      "frame_id": "frame-006",
+      "observed_at": "2026-07-15T07:36:00Z",
+      "ingested_at": "2026-07-15T07:38:00Z",
+      "expires_at": "2026-07-15T07:56:00Z",
+      "source_id": "skycast:synthetic-radar:wuhan-v1",
+      "product": "composite_reflectivity",
+      "unit": "dBZ",
+      "crs": "EPSG:4326",
+      "bounding_box": {
+        "west": 113.2,
+        "south": 29.6,
+        "east": 115.2,
+        "north": 31.6
+      },
+      "grid": {
+        "width": 80,
+        "height": 80,
+        "resolution_longitude_degrees": 0.025,
+        "resolution_latitude_degrees": 0.025,
+        "encoding": "uint8-dbz-v1",
+        "nodata_value": 255
+      },
+      "data_uri": "frames/frame-006.bin",
+      "checksum_sha256": "c0b5ba367586ef36055ec492a0c73fa4d55bd8cd8d36761a0b55eedf19971e95",
+      "max_reflectivity_dbz": 64,
+      "storm_centroid": {
+        "longitude": 114.1125,
+        "latitude": 30.3375
+      },
+      "quality_flags": [
+        "complete"
+      ],
+      "synthetic": true,
+      "official": false
+    },
+    {
+      "schema_version": 1,
+      "event_id": "wuhan-synthetic-convection-v1",
+      "frame_id": "frame-007",
+      "observed_at": "2026-07-15T07:42:00Z",
+      "ingested_at": "2026-07-15T07:44:00Z",
+      "expires_at": "2026-07-15T08:02:00Z",
+      "source_id": "skycast:synthetic-radar:wuhan-v1",
+      "product": "composite_reflectivity",
+      "unit": "dBZ",
+      "crs": "EPSG:4326",
+      "bounding_box": {
+        "west": 113.2,
+        "south": 29.6,
+        "east": 115.2,
+        "north": 31.6
+      },
+      "grid": {
+        "width": 80,
+        "height": 80,
+        "resolution_longitude_degrees": 0.025,
+        "resolution_latitude_degrees": 0.025,
+        "encoding": "uint8-dbz-v1",
+        "nodata_value": 255
+      },
+      "data_uri": "frames/frame-007.bin",
+      "checksum_sha256": "d2a654215c057143b45a34209680d2250c952f97d0917a67ff8c3c7b2ab6bb90",
+      "max_reflectivity_dbz": 64,
+      "storm_centroid": {
+        "longitude": 114.1875,
+        "latitude": 30.3875
+      },
+      "quality_flags": [
+        "complete"
+      ],
+      "synthetic": true,
+      "official": false
+    },
+    {
+      "schema_version": 1,
+      "event_id": "wuhan-synthetic-convection-v1",
+      "frame_id": "frame-008",
+      "observed_at": "2026-07-15T07:48:00Z",
+      "ingested_at": "2026-07-15T07:50:00Z",
+      "expires_at": "2026-07-15T08:08:00Z",
+      "source_id": "skycast:synthetic-radar:wuhan-v1",
+      "product": "composite_reflectivity",
+      "unit": "dBZ",
+      "crs": "EPSG:4326",
+      "bounding_box": {
+        "west": 113.2,
+        "south": 29.6,
+        "east": 115.2,
+        "north": 31.6
+      },
+      "grid": {
+        "width": 80,
+        "height": 80,
+        "resolution_longitude_degrees": 0.025,
+        "resolution_latitude_degrees": 0.025,
+        "encoding": "uint8-dbz-v1",
+        "nodata_value": 255
+      },
+      "data_uri": "frames/frame-008.bin",
+      "checksum_sha256": "fae7ac2a7915dce9b9821e0a366ac46c9fee5d45c94b0ff32f727b9c3427b9c8",
+      "max_reflectivity_dbz": 62,
+      "storm_centroid": {
+        "longitude": 114.2625,
+        "latitude": 30.4375
+      },
+      "quality_flags": [
+        "complete"
+      ],
+      "synthetic": true,
+      "official": false
+    },
+    {
+      "schema_version": 1,
+      "event_id": "wuhan-synthetic-convection-v1",
+      "frame_id": "frame-009",
+      "observed_at": "2026-07-15T07:54:00Z",
+      "ingested_at": "2026-07-15T07:56:00Z",
+      "expires_at": "2026-07-15T08:14:00Z",
+      "source_id": "skycast:synthetic-radar:wuhan-v1",
+      "product": "composite_reflectivity",
+      "unit": "dBZ",
+      "crs": "EPSG:4326",
+      "bounding_box": {
+        "west": 113.2,
+        "south": 29.6,
+        "east": 115.2,
+        "north": 31.6
+      },
+      "grid": {
+        "width": 80,
+        "height": 80,
+        "resolution_longitude_degrees": 0.025,
+        "resolution_latitude_degrees": 0.025,
+        "encoding": "uint8-dbz-v1",
+        "nodata_value": 255
+      },
+      "data_uri": "frames/frame-009.bin",
+      "checksum_sha256": "83fe7f55a8e00d19450f1daf5faba483224a4ba24c0f143dec0837bbfa6b48ba",
+      "max_reflectivity_dbz": 62,
+      "storm_centroid": {
+        "longitude": 114.3375,
+        "latitude": 30.4875
+      },
+      "quality_flags": [
+        "complete"
+      ],
+      "synthetic": true,
+      "official": false
+    },
+    {
+      "schema_version": 1,
+      "event_id": "wuhan-synthetic-convection-v1",
+      "frame_id": "frame-010",
+      "observed_at": "2026-07-15T08:00:00Z",
+      "ingested_at": "2026-07-15T08:02:00Z",
+      "expires_at": "2026-07-15T08:20:00Z",
+      "source_id": "skycast:synthetic-radar:wuhan-v1",
+      "product": "composite_reflectivity",
+      "unit": "dBZ",
+      "crs": "EPSG:4326",
+      "bounding_box": {
+        "west": 113.2,
+        "south": 29.6,
+        "east": 115.2,
+        "north": 31.6
+      },
+      "grid": {
+        "width": 80,
+        "height": 80,
+        "resolution_longitude_degrees": 0.025,
+        "resolution_latitude_degrees": 0.025,
+        "encoding": "uint8-dbz-v1",
+        "nodata_value": 255
+      },
+      "data_uri": "frames/frame-010.bin",
+      "checksum_sha256": "fbfa37f371af85269fed17f66bce0710cbe097bec1e3d1a655a66e644e682c94",
+      "max_reflectivity_dbz": 61,
+      "storm_centroid": {
+        "longitude": 114.4125,
+        "latitude": 30.5375
+      },
+      "quality_flags": [
+        "complete"
+      ],
+      "synthetic": true,
+      "official": false
+    },
+    {
+      "schema_version": 1,
+      "event_id": "wuhan-synthetic-convection-v1",
+      "frame_id": "frame-011",
+      "observed_at": "2026-07-15T08:06:00Z",
+      "ingested_at": "2026-07-15T08:08:00Z",
+      "expires_at": "2026-07-15T08:26:00Z",
+      "source_id": "skycast:synthetic-radar:wuhan-v1",
+      "product": "composite_reflectivity",
+      "unit": "dBZ",
+      "crs": "EPSG:4326",
+      "bounding_box": {
+        "west": 113.2,
+        "south": 29.6,
+        "east": 115.2,
+        "north": 31.6
+      },
+      "grid": {
+        "width": 80,
+        "height": 80,
+        "resolution_longitude_degrees": 0.025,
+        "resolution_latitude_degrees": 0.025,
+        "encoding": "uint8-dbz-v1",
+        "nodata_value": 255
+      },
+      "data_uri": "frames/frame-011.bin",
+      "checksum_sha256": "5b88e917554e6d110ccc048944bba63723e96b742c267a095df8f5087c71d9aa",
+      "max_reflectivity_dbz": 61,
+      "storm_centroid": {
+        "longitude": 114.4875,
+        "latitude": 30.5875
+      },
+      "quality_flags": [
+        "complete"
+      ],
+      "synthetic": true,
+      "official": false
+    }
+  ]
+}

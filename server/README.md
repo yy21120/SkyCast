@@ -6,6 +6,8 @@
 天气 Provider → 日落时刻特征 → 可解释规则评分 → FastAPI → 客户端机会卡
 ```
 
+雷达开发基线通过独立 Provider 读取仓库自有的武汉合成强对流事件包，尚未暴露公共 API。
+
 ## 本地启动
 
 在 `server` 目录执行：
@@ -56,3 +58,16 @@ Content-Type: application/json
 - `live` 使用 Open-Meteo 预报数据，客户端必须展示来源链接和更新时间。
 - 当前概率是未校准的规则基线，不得显示为官方预报或官方预警。
 - Open-Meteo 数据按 CC BY 4.0 使用，展示数据时必须署名并链接来源。
+- 雷达事件是合成回放，必须标注非实时、非官方且不可用于防灾或实际追风。
+
+## 合成雷达事件
+
+在仓库根目录重新生成并校验：
+
+```powershell
+server\.venv\Scripts\python.exe tools\build_synthetic_radar_event.py
+server\.venv\Scripts\python.exe tools\validate_radar_event.py
+```
+
+事件包含 12 个 80×80 的 `uint8-dbz-v1` 帧，间隔 6 分钟。完整格式、checksum 算法和
+真实雷达 Provider 的扩展约束见 `docs/RADAR_REPLAY_CONTRACT.md`。
