@@ -2,6 +2,7 @@ services:
   - type: web
     name: skycast-api
     runtime: docker
+    plan: free
     rootDir: .
     dockerfilePath: ./server/Dockerfile
     dockerContext: .
