@@ -4,7 +4,7 @@ SkyCast 是一款面向风光、天文与强天气摄影场景的 AI 气象决�
 
 ## 当前阶段
 
-项目进入 `M1 — 武汉晚霞纵向切片`：
+项目进入 `M2 — 晚霞摄影 Agent MVP`：
 
 - 产品全链路和指标已经定义；
 - 4 周 MVP 的范围与验收标准已经定义；
@@ -15,12 +15,16 @@ SkyCast 是一款面向风光、天文与强天气摄影场景的 AI 气象决�
 - 服务端已支持 SQLite 反馈持久化和客户端幂等重试；
 - 数据源准入目录已覆盖天气预报、官方预警、雷达和 FY-4 卫星候选来源；
 - 武汉强对流合成事件包和可替换 RadarProvider 已建立；
+- Android 首页已集成晚霞概览、武汉拍摄地图和对话式摄影建议；
+- 服务端已提供有事实边界的 Agent 接口，并支持 DeepSeek 与确定性降级回复；
+- 首次安装在无服务、无缓存时仍可进入明确标注的离线演示模式；
 - Git 仓库采用 GitHub Flow 和 Conventional Commits。
 
 ## 文档入口
 
 - [产品全链路总纲](docs/PRODUCT_BLUEPRINT.md)
 - [MVP PRD](docs/PRD_MVP.md)
+- [晚霞摄影 Agent MVP PRD v2.0](docs/SkyCast_晚霞摄影Agent_MVP_PRD_v2.0.docx)
 - [技术架构](docs/ARCHITECTURE.md)
 - [数据源准入与公开演示边界](docs/DATA_SOURCE_ADMISSION.md)
 - [武汉合成雷达回放契约](docs/RADAR_REPLAY_CONTRACT.md)

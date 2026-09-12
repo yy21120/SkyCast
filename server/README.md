@@ -1,6 +1,6 @@
 # SkyCast Server
 
-当前纵向切片提供武汉晚霞机会评估和实况结果反馈：
+当前纵向切片提供武汉晚霞机会评估、对话式摄影建议和实况结果反馈：
 
 ```text
 天气 Provider → 日落时刻特征 → 可解释规则评分 → FastAPI → 客户端机会卡
@@ -25,6 +25,41 @@ python -m uvicorn app.main:app --reload
 - `http://127.0.0.1:8000/docs`
 - `http://127.0.0.1:8000/v1/cities/wuhan/opportunities?mode=replay&days=3`
 - `http://127.0.0.1:8000/v1/cities/wuhan/opportunities?mode=live&days=3`
+
+## 晚霞摄影 Agent
+
+对话接口：
+
+```http
+POST /v1/agent/chat
+Content-Type: application/json
+```
+
+```json
+{
+  "city_id": "wuhan",
+  "message": "今天几点去东湖拍？",
+  "selected_spot_id": "east-lake-lingbo-gate",
+  "history": [],
+  "mode": "live"
+}
+```
+
+服务端先调用结构化晚霞评估和拍摄点工具，再把经过校验的事实交给语言模型。语言模型只能解释，不能改变评分、时间、坐标、置信度或安全结论。
+
+配置 DeepSeek：
+
+```powershell
+$env:DEEPSEEK_API_KEY = "<your-api-key>"
+$env:DEEPSEEK_MODEL = "deepseek-flash"
+$env:DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+$env:DEEPSEEK_TIMEOUT_SECONDS = "12"
+python -m uvicorn app.main:app --reload --host 0.0.0.0
+```
+
+密钥只保存在服务端环境变量中，不得写入 Android、配置样例或 Git。未配置密钥、请求超时或模型返回异常时，接口自动切换到 `skycast-rules` 确定性回复，并通过 `fallback: true` 明确标记。
+
+仓库提供 `server/Dockerfile` 和根目录 `render.yaml` 供云端部署。Docker 构建上下文必须使用仓库根目录，镜像会同时包含服务代码和回放数据。部署健康检查使用 `/ready`；`/health` 的 `agent_provider` 可确认云端是否读取到 DeepSeek 密钥。完整部署、Android 服务地址配置和高德地图接入步骤见 `docs/MVP_API_AND_MAP_SETUP.md`。
 
 ## 晚霞实况反馈
 

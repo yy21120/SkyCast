@@ -1,6 +1,12 @@
 # SkyCast Android
 
-首个 Android 纵向切片展示武汉未来三天晚霞机会卡和可追溯评估详情。
+Android MVP 首页使用晚霞橙紫渐变视觉，展示简洁天气/晚霞概览和对话式摄影 Agent。详细数据与地图会根据问题逐步出现，避免首屏信息过载。
+
+首页只保留晚霞主卡和 Agent 对话框。通过“未来三天怎么样”“几点出发”“帮我规划拍摄地图”等问题，才在对话下方按需展开趋势、详细天气或地图模块，并自动滚动到新结果。询问地点或导航后展示武汉候选机位地图；配置高德 Android Key 后自动启用可缩放地图，x86 模拟器保留可选机位预览。Agent 返回失败时，客户端会依据当前结构化评估生成离线建议，不会把语言模型当作概率计算器。
+
+主卡的日轨迹会按武汉时区每分钟更新太阳位置，晚霞染色窗口用高亮色段和色点表示。发出第一条问题后，主卡折叠为日轨迹条；Agent 使用固定高度的内部滚动区，最新消息优先进入视野，历史对话可滑动回看。地图、趋势和详情卡只在当前问题明确相关时出现，不跨问题累积；“今天值得去吗”等判断问题仅回复文字。对话首次到达滚动边界时只停留阅读，第二次继续同方向滑动才触发主卡与 Agent 的线性联动切换；首次尚未对话时，也可连续下滑主卡展开 Agent。
+
+DeepSeek 服务端部署、高德 Key、SHA1 和导航接入步骤见 `docs/MVP_API_AND_MAP_SETUP.md`。
 
 点击任意机会卡可进入详情页，查看：
 
@@ -24,9 +30,9 @@
 
 反馈当前需要在线提交。离线反馈队列、账号体系、图片上传和公开评论不属于此版本。
 
-## 本地接口
+## 模拟器联调
 
-Debug 构建默认连接 Android 模拟器宿主机的 FastAPI：
+Android 模拟器通过专用宿主机地址访问电脑上的 API：
 
 ```text
 http://10.0.2.2:8000
@@ -39,11 +45,28 @@ cd server
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
 ```
 
-再用 Android Studio 打开 `android` 目录，运行 `app`。
+可以在仓库根目录一次完成服务启动、模拟器构建、安装和启动：
+
+```powershell
+.\tools\run_android_mvp.ps1
+```
+
+脚本默认只选择 Android 模拟器，不依赖 USB 端口转发。x86/x86_64 模拟器使用可点击的本地武汉机位预览；高德 10.x 原生地图仅在 ARM 设备上加载。
+
+### 构建可脱离 USB 使用的 APK
+
+手机不连接 USB 和电脑时，APK 必须访问长期在线的 HTTPS 服务。`127.0.0.1`、`10.0.2.2`、`adb reverse`、局域网 IP 和临时 Cloudflare 域名都不是可发布配置。先部署 `server` 并验证健康检查，再构建：
+
+```powershell
+cd android
+.\gradlew.bat --% assembleDebug -PSKYCAST_API_BASE_URL=https://你的正式服务域名
+```
+
+生成文件位于 `android/app/build/outputs/apk/debug/app-debug.apk`。将它复制到手机后直接安装，运行时不需要 USB，但手机需要可用的互联网连接。正式发布前应改用 release 签名构建。
 
 当前页面明确标注“规则评分基线·非官方天气预报”。Release 构建不会允许明文 HTTP，正式部署时必须替换为 HTTPS API。
 
-Windows 下请从纯英文路径打开和构建 Android 工程。Android Gradle Plugin、JUnit 进程以及后续 NDK/JNI 工具链可能无法正确处理非 ASCII 工程路径。
+Windows 下建议通过 `subst S: <仓库绝对路径>` 映射纯英文盘符，再从 `S:\android` 构建。项目已允许中文工程路径，但 Gradle/JUnit 的测试类路径仍可能受非 ASCII 路径影响。
 
 ## 离线缓存
 
@@ -55,6 +78,7 @@ Windows 下请从纯英文路径打开和构建 Android 工程。Android Gradle 
 - 缓存页面可通过“重新获取”主动恢复在线数据；
 - 从缓存进入详情页时继续保留离线或过期状态及“重新获取”入口；
 - 损坏或无法解析的缓存会被删除，不会导致 App 崩溃。
+- 首次安装且网络不可用时，展示明确标注的内置演示数据；该数据不能误认为当前天气。
 
 缓存表首版以 `城市:场景:天数` 为键保存 JSON 快照和本地缓存时间。Room Schema 保存在 `app/schemas`，数据库升级时必须提交新的 Schema 和迁移测试。
 

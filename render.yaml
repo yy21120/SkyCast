@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: skycast-api
+    runtime: docker
+    rootDir: .
+    dockerfilePath: ./server/Dockerfile
+    dockerContext: .
+    healthCheckPath: /ready
+    envVars:
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: DEEPSEEK_MODEL
+        value: deepseek-flash
+      - key: DEEPSEEK_BASE_URL
+        value: https://api.deepseek.com
+      - key: DEEPSEEK_TIMEOUT_SECONDS
+        value: "12"

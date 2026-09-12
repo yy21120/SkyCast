@@ -3,12 +3,16 @@ package com.yy21120.skycast.ui
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeDown
+import androidx.compose.ui.test.swipeUp
 import com.yy21120.skycast.data.AssessmentFactor
 import com.yy21120.skycast.data.City
 import com.yy21120.skycast.data.OpportunitiesResponse
@@ -36,10 +40,14 @@ class SkyCastNavigationTest {
                     result = cachedResult(),
                     onRetry = {},
                     onOpenSource = { openedUrl = it },
+                    agentState = AgentUiState(revealedModules = setOf(AgentModule.FORECAST)),
                 )
             }
         }
 
+        composeRule
+            .onNodeWithTag("agent-conversation-scroll")
+            .performScrollToNode(hasTestTag("opportunity-card-wuhan-sunset-2026-08-26"))
         composeRule
             .onNodeWithTag("opportunity-card-wuhan-sunset-2026-08-26")
             .performClick()
@@ -63,7 +71,59 @@ class SkyCastNavigationTest {
 
         detailList.performScrollToNode(hasText("← 返回"))
         composeRule.onNodeWithText("← 返回").performClick()
-        composeRule.onNodeWithText("武汉晚霞机会").assertIsDisplayed()
+        composeRule
+            .onNodeWithTag("opportunity-list")
+            .performScrollToNode(hasText("晚霞摄影 Agent"))
+        composeRule.onNodeWithText("晚霞摄影 Agent").assertIsDisplayed()
+    }
+
+    @Test
+    fun homeShowsMapAndConversationalAgent() {
+        composeRule.setContent {
+            SkyCastTheme {
+                SkyCastNavHost(
+                    result = cachedResult(),
+                    onRetry = {},
+                    onOpenSource = {},
+                    agentState = AgentUiState(revealedModules = setOf(AgentModule.MAP)),
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("sun-path-visualization").assertIsDisplayed()
+        composeRule.onNodeWithTag("agent-glass-panel").assertIsDisplayed()
+        composeRule.onNodeWithTag("wuhan-shooting-map").assertIsDisplayed()
+        composeRule.onNodeWithTag("agent-input").assertIsDisplayed()
+        composeRule.onNodeWithText("晚霞摄影 Agent").assertIsDisplayed()
+
+        composeRule.onNodeWithTag("sun-path-visualization").performTouchInput { swipeDown() }
+        assertTrue(composeRule.onAllNodes(hasText("65%")).fetchSemanticsNodes().isEmpty())
+        composeRule.onNodeWithTag("sun-path-visualization").performTouchInput { swipeDown() }
+        composeRule.onNodeWithText("65%").assertIsDisplayed()
+        composeRule.onNodeWithTag("sun-path-visualization").performTouchInput { swipeUp() }
+        composeRule.onNodeWithText("65%").assertIsDisplayed()
+        composeRule.onNodeWithTag("sun-path-visualization").performTouchInput { swipeUp() }
+        assertTrue(composeRule.onAllNodes(hasText("65%")).fetchSemanticsNodes().isEmpty())
+    }
+
+    @Test
+    fun initialHomeCanExpandAgentWithAConfirmedDownSwipe() {
+        composeRule.setContent {
+            SkyCastTheme {
+                SkyCastNavHost(
+                    result = cachedResult(),
+                    onRetry = {},
+                    onOpenSource = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("65%").assertIsDisplayed()
+        composeRule.onNodeWithTag("sun-path-visualization").performTouchInput { swipeDown() }
+        composeRule.onNodeWithText("65%").assertIsDisplayed()
+        composeRule.onNodeWithTag("sun-path-visualization").performTouchInput { swipeDown() }
+        assertTrue(composeRule.onAllNodes(hasText("65%")).fetchSemanticsNodes().isEmpty())
+        composeRule.onNodeWithTag("agent-input").assertIsDisplayed()
     }
 
     @Test

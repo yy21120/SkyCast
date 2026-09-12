@@ -14,6 +14,7 @@ data class OpportunityResult(
 enum class OpportunityDataSource {
     ONLINE,
     CACHE,
+    DEMO,
 }
 
 interface OpportunityRemoteDataSource {

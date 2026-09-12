@@ -53,6 +53,11 @@ internal fun DataStatusBanner(
                 containerColor = Color(0xFFFFF8D8),
             )
         }
+        OpportunityDataSource.DEMO -> DataStatusStyle(
+            label = "离线演示数据 · 联网后自动获取最新评估",
+            contentColor = Color(0xFF5D3F8C),
+            containerColor = Color(0xFFF3ECFA),
+        )
     }
 
     Surface(
@@ -73,7 +78,7 @@ internal fun DataStatusBanner(
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Medium,
             )
-            if (result.source == OpportunityDataSource.CACHE) {
+            if (result.source != OpportunityDataSource.ONLINE) {
                 TextButton(onClick = onRetry) { Text("重新获取") }
             }
         }

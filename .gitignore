@@ -2,6 +2,7 @@
 build/
 .cxx/
 .gradle/
+.kotlin/
 **/build/
 
 # IDE

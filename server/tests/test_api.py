@@ -18,7 +18,16 @@ def test_health() -> None:
     response = get("/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "version": "0.1.0"}
+    assert response.json()["status"] == "ok"
+    assert response.json()["version"] == "0.2.0"
+    assert response.json()["agent_provider"] in {"deepseek", "rules"}
+
+
+def test_ready_checks_runtime_files() -> None:
+    response = get("/ready")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ready", "version": "0.2.0"}
 
 
 def test_wuhan_replay_opportunities_are_rankable_and_traceable() -> None:

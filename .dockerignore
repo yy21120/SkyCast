@@ -1,0 +1,16 @@
+.git
+.github
+.idea
+.gradle
+.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/build
+android
+docs
+tools
+data/private
+server/tests
+server/var
+*.docx

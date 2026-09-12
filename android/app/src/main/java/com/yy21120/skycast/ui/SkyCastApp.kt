@@ -28,9 +28,11 @@ internal data class OpportunityDetailRoute(val sceneId: String)
 fun SkyCastApp(
     opportunityViewModel: OpportunityViewModel,
     feedbackViewModel: FeedbackViewModel,
+    agentViewModel: AgentViewModel,
 ) {
     val uiState by opportunityViewModel.uiState.collectAsStateWithLifecycle()
     val feedbackState by feedbackViewModel.uiState.collectAsStateWithLifecycle()
+    val agentState by agentViewModel.uiState.collectAsStateWithLifecycle()
     val navController = rememberNavController()
     val context = LocalContext.current
 
@@ -47,6 +49,17 @@ fun SkyCastApp(
                 onOpenSource = { url -> openSourceUrl(context, url) },
                 feedbackState = feedbackState,
                 onFeedbackAction = feedbackViewModel::onAction,
+                agentState = agentState,
+                onAgentInputChange = agentViewModel::updateInput,
+                onAgentSend = {
+                    state.result.response.opportunities.firstOrNull()?.let(agentViewModel::send)
+                },
+                onAgentQuickPrompt = { prompt ->
+                    state.result.response.opportunities.firstOrNull()?.let { opportunity ->
+                        agentViewModel.ask(prompt, opportunity)
+                    }
+                },
+                onSpotSelected = agentViewModel::selectSpot,
                 navController = navController,
             )
         }
@@ -60,6 +73,11 @@ internal fun SkyCastNavHost(
     onOpenSource: (String) -> Unit,
     feedbackState: FeedbackUiState = FeedbackUiState(),
     onFeedbackAction: (FeedbackAction) -> Unit = {},
+    agentState: AgentUiState = AgentUiState(),
+    onAgentInputChange: (String) -> Unit = {},
+    onAgentSend: () -> Unit = {},
+    onAgentQuickPrompt: (String) -> Unit = {},
+    onSpotSelected: (String) -> Unit = {},
     navController: NavHostController = rememberNavController(),
 ) {
     fun returnToList() {
@@ -81,6 +99,11 @@ internal fun SkyCastNavHost(
                 onOpportunityClick = { sceneId ->
                     navController.navigate(OpportunityDetailRoute(sceneId))
                 },
+                agentState = agentState,
+                onAgentInputChange = onAgentInputChange,
+                onAgentSend = onAgentSend,
+                onAgentQuickPrompt = onAgentQuickPrompt,
+                onSpotSelected = onSpotSelected,
             )
         }
         composable<OpportunityDetailRoute> { backStackEntry ->

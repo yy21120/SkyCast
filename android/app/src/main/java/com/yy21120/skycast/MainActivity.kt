@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yy21120.skycast.ui.FeedbackViewModel
+import com.yy21120.skycast.ui.AgentViewModel
 import com.yy21120.skycast.ui.OpportunityViewModel
 import com.yy21120.skycast.ui.SkyCastApp
 import com.yy21120.skycast.ui.theme.SkyCastTheme
@@ -23,9 +24,13 @@ class MainActivity : ComponentActivity() {
                 val feedbackViewModel: FeedbackViewModel = viewModel(
                     factory = FeedbackViewModel.factory(BuildConfig.API_BASE_URL),
                 )
+                val agentViewModel: AgentViewModel = viewModel(
+                    factory = AgentViewModel.factory(BuildConfig.API_BASE_URL),
+                )
                 SkyCastApp(
                     opportunityViewModel = opportunityViewModel,
                     feedbackViewModel = feedbackViewModel,
+                    agentViewModel = agentViewModel,
                 )
             }
         }

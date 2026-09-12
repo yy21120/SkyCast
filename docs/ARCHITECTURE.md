@@ -58,6 +58,8 @@ core/                    C++20共享核心
 
 Android首版采用单 Activity、Compose、ViewModel、Repository。读取以 Room 为单一事实来源：网络同步成功后写入 Room，UI 只观察本地数据。
 
+Agent MVP 仍保持单 Activity：机会列表首页组合天气摘要、本地平面拍摄地图和对话区。`AgentViewModel` 只负责对话状态与降级，数值结论继续来自 `OpportunityRepository`，地图点位采用可替换的结构化 `ShootingSpot` 模型。
+
 ## 4. C++ 核心边界
 
 适合放入 C++：
@@ -111,6 +113,7 @@ GET /v1/scenes/{sceneId}/assessment
 GET /v1/radar/frames
 GET /v1/nowcasts/{location}
 POST /v1/feedback
+POST /v1/agent/chat
 GET /v1/events/{eventId}/timeline
 ```
 
@@ -124,6 +127,8 @@ GET /v1/events/{eventId}/timeline
 | 用户问答 | 检索结构化事实 | 组织语言并引用来源 |
 
 LLM只能接收已经校验过的结构化事实，输出必须保留来源和有效时间。它不能生成新的官方预警或改变安全等级。
+
+`POST /v1/agent/chat` 先执行晚霞评估与机位查询，再将事实快照写入系统提示。DeepSeek 密钥只存在服务端环境变量中；无密钥、超时、上游异常或客户端断网时，分别由服务端和 Android 客户端提供确定性规则回复。
 
 ## 7. 首条纵向切片
 

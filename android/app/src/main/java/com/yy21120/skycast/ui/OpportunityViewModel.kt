@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.yy21120.skycast.data.CachedOpportunityRepository
 import com.yy21120.skycast.data.HttpOpportunityDataSource
+import com.yy21120.skycast.data.DemoOpportunityRepository
 import com.yy21120.skycast.data.OpportunityNetworkException
 import com.yy21120.skycast.data.OpportunityRepository
 import com.yy21120.skycast.data.OpportunityResult
@@ -60,9 +61,11 @@ class OpportunityViewModel(
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     require(modelClass.isAssignableFrom(OpportunityViewModel::class.java))
                     val database = SkyCastDatabase.getInstance(applicationContext)
-                    val repository = CachedOpportunityRepository(
-                        remote = HttpOpportunityDataSource(baseUrl),
-                        cache = RoomOpportunityCacheStore(database.opportunityCacheDao()),
+                    val repository = DemoOpportunityRepository(
+                        CachedOpportunityRepository(
+                            remote = HttpOpportunityDataSource(baseUrl),
+                            cache = RoomOpportunityCacheStore(database.opportunityCacheDao()),
+                        ),
                     )
                     return OpportunityViewModel(repository) as T
                 }

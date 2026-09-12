@@ -6,6 +6,12 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
+val debugApiBaseUrl = providers.gradleProperty("SKYCAST_API_BASE_URL")
+    .getOrElse("http://127.0.0.1:8000")
+val releaseApiBaseUrl = providers.gradleProperty("SKYCAST_RELEASE_API_BASE_URL")
+    .getOrElse("https://api.skycast.example")
+val amapApiKey = providers.gradleProperty("AMAP_API_KEY").getOrElse("")
+
 android {
     namespace = "com.yy21120.skycast"
     compileSdk = 37
@@ -14,16 +20,18 @@ android {
         applicationId = "com.yy21120.skycast"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "API_BASE_URL", "\"https://api.skycast.example\"")
+        buildConfigField("String", "API_BASE_URL", "\"$releaseApiBaseUrl\"")
+        buildConfigField("String", "AMAP_API_KEY", "\"$amapApiKey\"")
+        manifestPlaceholders["AMAP_API_KEY"] = amapApiKey
     }
 
     buildTypes {
         debug {
-            buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8000\"")
+            buildConfigField("String", "API_BASE_URL", "\"$debugApiBaseUrl\"")
         }
         release {
             isMinifyEnabled = false
@@ -69,6 +77,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$navigationVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
     implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("com.amap.api:3dmap-location-search:10.1.200_loc6.4.9_sea9.7.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 
