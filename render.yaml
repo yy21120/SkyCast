@@ -3,6 +3,7 @@ services:
     name: skycast-api
     runtime: docker
     plan: free
+    autoDeployTrigger: commit
     rootDir: .
     dockerfilePath: ./server/Dockerfile
     dockerContext: .
