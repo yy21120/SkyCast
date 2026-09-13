@@ -82,6 +82,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlinx.coroutines.delay
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.sin
 
 private val NightPurple = Color(0xFF38244F)
@@ -117,7 +118,7 @@ internal fun SunsetAgentSection(
     val heroCollapsed = !heroExpanded
     val heroWeight by animateFloatAsState(
         targetValue = if (heroCollapsed) 0.16f else 0.58f,
-        animationSpec = tween(durationMillis = 420, easing = LinearEasing),
+        animationSpec = tween(durationMillis = 260, easing = LinearEasing),
         label = "hero-weight",
     )
 
@@ -128,7 +129,6 @@ internal fun SunsetAgentSection(
             onRetry = onRetry,
             compact = heroCollapsed,
             onExpand = { heroExpanded = true },
-            hasConversation = conversationActive,
             onCollapse = { heroExpanded = false },
             modifier = Modifier.weight(heroWeight),
         )
@@ -144,6 +144,7 @@ internal fun SunsetAgentSection(
             onSpotSelected = onSpotSelected,
             heroCollapsed = heroCollapsed,
             onExpandHero = { heroExpanded = true },
+            onCollapseHero = { heroExpanded = false },
         )
     }
 }
@@ -155,58 +156,18 @@ private fun SunsetHeroCard(
     onRetry: () -> Unit,
     compact: Boolean,
     onExpand: () -> Unit,
-    hasConversation: Boolean,
     onCollapse: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val style = recommendationStyle(opportunity.recommendation)
-    var dragDistance by remember { mutableFloatStateOf(0f) }
-    var dragDirection by remember { mutableStateOf(0) }
-    var armedDirection by remember { mutableStateOf<Int?>(null) }
-    LaunchedEffect(compact) {
-        armedDirection = null
-    }
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .pointerInput(compact, hasConversation) {
-                detectVerticalDragGestures(
-                    onDragStart = {
-                        dragDistance = 0f
-                        dragDirection = 0
-                    },
-                    onVerticalDrag = { _, dragAmount ->
-                        val direction = if (dragAmount > 0f) 1 else -1
-                        if (dragDirection == 0 || dragDirection == direction) {
-                            dragDirection = direction
-                            dragDistance += kotlin.math.abs(dragAmount)
-                        } else {
-                            dragDistance = 0f
-                            dragDirection = direction
-                        }
-                    },
-                    onDragEnd = {
-                        val isExpandMainGesture = compact && dragDirection > 0
-                        val isExpandAgentGesture = !compact && (
-                            dragDirection < 0 || (!hasConversation && dragDirection > 0)
-                        )
-                        if (dragDistance >= 36.dp.toPx() && (isExpandMainGesture || isExpandAgentGesture)) {
-                            if (armedDirection == dragDirection) {
-                                if (isExpandMainGesture) onExpand() else onCollapse()
-                                armedDirection = null
-                            } else {
-                                armedDirection = dragDirection
-                            }
-                        }
-                        dragDistance = 0f
-                        dragDirection = 0
-                    },
-                    onDragCancel = {
-                        dragDistance = 0f
-                        dragDirection = 0
-                    },
-                )
-            }
+            .cardResizeGestures(
+                expanded = !compact,
+                onExpand = onExpand,
+                onCollapse = onCollapse,
+            )
             .clip(RoundedCornerShape(28.dp))
             .background(Brush.verticalGradient(listOf(NightPurple, Plum, SunsetCoral)))
             .testTag("sunset-hero-card"),
@@ -234,6 +195,34 @@ private fun SunsetHeroCard(
             }
         }
     }
+}
+
+private fun Modifier.cardResizeGestures(
+    expanded: Boolean,
+    onExpand: () -> Unit,
+    onCollapse: () -> Unit,
+): Modifier = pointerInput(expanded) {
+    var dragDistance = 0f
+    detectVerticalDragGestures(
+        onDragStart = { dragDistance = 0f },
+        onVerticalDrag = { _, dragAmount ->
+            if (dragDistance == 0f || dragDistance * dragAmount >= 0f) {
+                dragDistance += dragAmount
+            } else {
+                dragDistance = dragAmount
+            }
+        },
+        onDragEnd = {
+            if (abs(dragDistance) >= 24.dp.toPx()) {
+                when {
+                    dragDistance < 0f && expanded -> onCollapse()
+                    dragDistance > 0f && !expanded -> onExpand()
+                }
+            }
+            dragDistance = 0f
+        },
+        onDragCancel = { dragDistance = 0f },
+    )
 }
 
 @Composable
@@ -571,6 +560,7 @@ private fun AgentConversation(
     onSpotSelected: (String) -> Unit,
     heroCollapsed: Boolean,
     onExpandHero: () -> Unit,
+    onCollapseHero: () -> Unit,
 ) {
     val conversationScroll = rememberScrollState()
     val latestMessageRequester = remember { BringIntoViewRequester() }
@@ -682,45 +672,61 @@ private fun AgentConversation(
             modifier = Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text("晚霞摄影 Agent", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Surface(
-                    color = Color.White.copy(alpha = 0.42f),
-                    shape = RoundedCornerShape(99.dp),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.62f)),
-                ) {
-                    Text(
-                        "LIVE",
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                        color = NightPurple,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.labelSmall,
-                    )
-                }
-            }
-            Text(
-                "问得越具体，越容易得到可操作的时间、数据和机位建议",
-                style = MaterialTheme.typography.bodySmall,
-                color = NightPurple.copy(alpha = 0.78f),
-            )
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(6.dp)
-                    .background(
-                        Brush.horizontalGradient(
-                            listOf(
-                                Color.Transparent,
-                                Color.White.copy(alpha = 0.72f),
-                                Color.Transparent,
+                    .cardResizeGestures(
+                        expanded = !heroCollapsed,
+                        onExpand = onExpandHero,
+                        onCollapse = onCollapseHero,
+                    )
+                    .testTag("agent-panel-handle"),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        "晚霞摄影 Agent",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Surface(
+                        color = Color.White.copy(alpha = 0.42f),
+                        shape = RoundedCornerShape(99.dp),
+                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.62f)),
+                    ) {
+                        Text(
+                            "LIVE",
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                            color = NightPurple,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                    }
+                }
+                Text(
+                    "问得越具体，越容易得到可操作的时间、数据和机位建议",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = NightPurple.copy(alpha = 0.78f),
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp)
+                        .background(
+                            Brush.horizontalGradient(
+                                listOf(
+                                    Color.Transparent,
+                                    Color.White.copy(alpha = 0.72f),
+                                    Color.Transparent,
+                                ),
                             ),
                         ),
-                    ),
-            )
+                )
+            }
 
             Column(
                 modifier = Modifier

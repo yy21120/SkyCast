@@ -97,17 +97,13 @@ class SkyCastNavigationTest {
         composeRule.onNodeWithText("晚霞摄影 Agent").assertIsDisplayed()
 
         composeRule.onNodeWithTag("sun-path-visualization").performTouchInput { swipeDown() }
-        assertTrue(composeRule.onAllNodes(hasText("65%")).fetchSemanticsNodes().isEmpty())
-        composeRule.onNodeWithTag("sun-path-visualization").performTouchInput { swipeDown() }
-        composeRule.onNodeWithText("65%").assertIsDisplayed()
-        composeRule.onNodeWithTag("sun-path-visualization").performTouchInput { swipeUp() }
         composeRule.onNodeWithText("65%").assertIsDisplayed()
         composeRule.onNodeWithTag("sun-path-visualization").performTouchInput { swipeUp() }
         assertTrue(composeRule.onAllNodes(hasText("65%")).fetchSemanticsNodes().isEmpty())
     }
 
     @Test
-    fun initialHomeCanExpandAgentWithAConfirmedDownSwipe() {
+    fun initialHomeExpandsAgentWithOneUpSwipe() {
         composeRule.setContent {
             SkyCastTheme {
                 SkyCastNavHost(
@@ -119,11 +115,29 @@ class SkyCastNavigationTest {
         }
 
         composeRule.onNodeWithText("65%").assertIsDisplayed()
-        composeRule.onNodeWithTag("sun-path-visualization").performTouchInput { swipeDown() }
-        composeRule.onNodeWithText("65%").assertIsDisplayed()
-        composeRule.onNodeWithTag("sun-path-visualization").performTouchInput { swipeDown() }
+        composeRule.onNodeWithTag("sun-path-visualization").performTouchInput { swipeUp() }
         assertTrue(composeRule.onAllNodes(hasText("65%")).fetchSemanticsNodes().isEmpty())
         composeRule.onNodeWithTag("agent-input").assertIsDisplayed()
+    }
+
+    @Test
+    fun conversationNeedsTwoBoundaryPullsBeforeExpandingHero() {
+        composeRule.setContent {
+            SkyCastTheme {
+                SkyCastNavHost(
+                    result = cachedResult(),
+                    onRetry = {},
+                    onOpenSource = {},
+                    agentState = AgentUiState(revealedModules = setOf(AgentModule.MAP)),
+                )
+            }
+        }
+
+        val conversation = composeRule.onNodeWithTag("agent-conversation-scroll")
+        conversation.performTouchInput { swipeDown() }
+        assertTrue(composeRule.onAllNodes(hasText("65%")).fetchSemanticsNodes().isEmpty())
+        conversation.performTouchInput { swipeDown() }
+        composeRule.onNodeWithText("65%").assertIsDisplayed()
     }
 
     @Test
