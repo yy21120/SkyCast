@@ -101,7 +101,10 @@ def create_app(
         try:
             return OpportunityService(provider, mode).list_sunset_opportunities(city, days)
         except (OSError, ValueError, KeyError, TypeError) as exc:
-            raise HTTPException(status_code=502, detail="weather provider unavailable") from exc
+            raise HTTPException(
+                status_code=502,
+                detail=f"weather provider unavailable ({type(exc).__name__})",
+            ) from exc
 
     @skycast_app.post(
         "/v1/agent/chat",
@@ -121,7 +124,10 @@ def create_app(
         try:
             opportunities = OpportunityService(provider, mode).list_sunset_opportunities(city, 3)
         except (OSError, ValueError, KeyError, TypeError) as exc:
-            raise HTTPException(status_code=502, detail="weather provider unavailable") from exc
+            raise HTTPException(
+                status_code=502,
+                detail=f"weather provider unavailable ({type(exc).__name__})",
+            ) from exc
 
         language_model = agent_language_model
         if language_model is None:
