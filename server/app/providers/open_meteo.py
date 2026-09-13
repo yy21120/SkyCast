@@ -22,6 +22,7 @@ HOURLY_FIELDS = (
 )
 
 SOURCE_ID = "open-meteo:forecast"
+DEFAULT_RETRY_DELAYS_SECONDS = (0.5, 2.0)
 
 
 class OpenMeteoWeatherProvider:
@@ -45,26 +46,41 @@ class OpenMeteoWeatherProvider:
             }
         )
         source_url = f"{self._base_url}?{query}"
-        request = Request(source_url, headers={"User-Agent": "SkyCast/0.1"})
+        request = Request(
+            source_url,
+            headers={
+                "Accept": "application/json",
+                "User-Agent": "SkyCast/0.2 (+https://github.com/yy21120/SkyCast)",
+            },
+        )
         payload = self._load_payload(request)
         return self.parse_payload(payload, source_url, datetime.now(UTC))
 
     def _load_payload(self, request: Request) -> dict[str, Any]:
-        for attempt in range(2):
+        attempts = len(DEFAULT_RETRY_DELAYS_SECONDS) + 1
+        for attempt in range(attempts):
             try:
                 with urlopen(request, timeout=self._timeout_seconds) as response:
                     return json.load(response)
             except HTTPError as exc:
-                if attempt == 0 and (exc.code == 429 or 500 <= exc.code < 600):
-                    time.sleep(0.25)
+                if attempt < attempts - 1 and (exc.code == 429 or 500 <= exc.code < 600):
+                    time.sleep(self._retry_delay(exc, attempt))
                     continue
                 raise
             except (URLError, TimeoutError, OSError):
-                if attempt == 0:
-                    time.sleep(0.25)
+                if attempt < attempts - 1:
+                    time.sleep(DEFAULT_RETRY_DELAYS_SECONDS[attempt])
                     continue
                 raise
         raise RuntimeError("Open-Meteo request exhausted without a response")
+
+    @staticmethod
+    def _retry_delay(exc: HTTPError, attempt: int) -> float:
+        retry_after = exc.headers.get("Retry-After") if exc.headers else None
+        try:
+            return min(max(float(retry_after), 0.0), 5.0)
+        except (TypeError, ValueError):
+            return DEFAULT_RETRY_DELAYS_SECONDS[attempt]
 
     @staticmethod
     def _timeout_from_environment() -> float:

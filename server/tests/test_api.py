@@ -1,8 +1,9 @@
 import asyncio
+from urllib.error import HTTPError
 
 from httpx import ASGITransport, AsyncClient, Response
 
-from app.main import app
+from app.main import app, weather_provider_failure_detail
 
 
 def get(path: str) -> Response:
@@ -21,6 +22,20 @@ def test_health() -> None:
     assert response.json()["status"] == "ok"
     assert response.json()["version"] == "0.2.0"
     assert response.json()["agent_provider"] in {"deepseek", "rules"}
+
+
+def test_weather_http_error_exposes_only_safe_status() -> None:
+    error = HTTPError(
+        "https://api.example.test/private?token=secret",
+        429,
+        "rate limited",
+        {},
+        None,
+    )
+
+    assert weather_provider_failure_detail(error) == (
+        "weather provider unavailable (HTTP 429)"
+    )
 
 
 def test_ready_checks_runtime_files() -> None:

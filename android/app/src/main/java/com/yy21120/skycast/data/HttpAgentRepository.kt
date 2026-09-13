@@ -42,7 +42,8 @@ class HttpAgentRepository(
         }
 
     private companion object {
-        const val CONNECT_TIMEOUT_MILLIS = 10_000
-        const val READ_TIMEOUT_MILLIS = 35_000
+        // Allow for a Render cold start followed by the upstream model request.
+        const val CONNECT_TIMEOUT_MILLIS = 20_000
+        const val READ_TIMEOUT_MILLIS = 90_000
     }
 }

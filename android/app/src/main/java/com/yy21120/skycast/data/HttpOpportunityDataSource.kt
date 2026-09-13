@@ -40,8 +40,9 @@ class HttpOpportunityDataSource(
         }
 
     private companion object {
-        const val CONNECT_TIMEOUT_MILLIS = 5_000
-        const val READ_TIMEOUT_MILLIS = 10_000
+        // Render's free service can need tens of seconds to wake after being idle.
+        const val CONNECT_TIMEOUT_MILLIS = 20_000
+        const val READ_TIMEOUT_MILLIS = 90_000
     }
 }
 

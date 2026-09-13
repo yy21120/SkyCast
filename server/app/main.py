@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from typing import Literal
+from urllib.error import HTTPError
 
 from fastapi import FastAPI, HTTPException, Query, status
 from fastapi.responses import JSONResponse
@@ -43,6 +44,12 @@ DEFAULT_FEEDBACK_DATABASE = Path(
 
 class Utf8JsonResponse(JSONResponse):
     media_type = "application/json; charset=utf-8"
+
+
+def weather_provider_failure_detail(exc: Exception) -> str:
+    if isinstance(exc, HTTPError):
+        return f"weather provider unavailable (HTTP {exc.code})"
+    return f"weather provider unavailable ({type(exc).__name__})"
 
 
 def create_app(
@@ -103,7 +110,7 @@ def create_app(
         except (OSError, ValueError, KeyError, TypeError) as exc:
             raise HTTPException(
                 status_code=502,
-                detail=f"weather provider unavailable ({type(exc).__name__})",
+                detail=weather_provider_failure_detail(exc),
             ) from exc
 
     @skycast_app.post(
@@ -126,7 +133,7 @@ def create_app(
         except (OSError, ValueError, KeyError, TypeError) as exc:
             raise HTTPException(
                 status_code=502,
-                detail=f"weather provider unavailable ({type(exc).__name__})",
+                detail=weather_provider_failure_detail(exc),
             ) from exc
 
         language_model = agent_language_model
