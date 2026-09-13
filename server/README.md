@@ -54,6 +54,7 @@ $env:DEEPSEEK_API_KEY = "<your-api-key>"
 $env:DEEPSEEK_MODEL = "deepseek-flash"
 $env:DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 $env:DEEPSEEK_TIMEOUT_SECONDS = "12"
+$env:OPEN_METEO_TIMEOUT_SECONDS = "20"
 python -m uvicorn app.main:app --reload --host 0.0.0.0
 ```
 

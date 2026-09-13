@@ -16,3 +16,5 @@ services:
         value: https://api.deepseek.com
       - key: DEEPSEEK_TIMEOUT_SECONDS
         value: "12"
+      - key: OPEN_METEO_TIMEOUT_SECONDS
+        value: "20"

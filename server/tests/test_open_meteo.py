@@ -1,5 +1,10 @@
+import io
+import json
 from datetime import UTC, datetime, timedelta, timezone
+from urllib.error import URLError
+from urllib.request import Request
 
+from app.providers import open_meteo
 from app.providers.open_meteo import OpenMeteoWeatherProvider
 
 
@@ -33,3 +38,30 @@ def test_parse_payload_uses_hour_nearest_sunset() -> None:
     )
     assert result[0].low_cloud_percent == 30
     assert result[0].source_id == "open-meteo:forecast"
+
+
+def test_provider_retries_one_transient_network_failure(monkeypatch) -> None:
+    calls = 0
+
+    def fake_urlopen(request, timeout):
+        nonlocal calls
+        calls += 1
+        assert timeout == 20
+        if calls == 1:
+            raise URLError("temporary failure")
+        return io.BytesIO(json.dumps({"ok": True}).encode())
+
+    monkeypatch.setattr(open_meteo, "urlopen", fake_urlopen)
+    monkeypatch.setattr(open_meteo.time, "sleep", lambda _: None)
+
+    provider = OpenMeteoWeatherProvider(timeout_seconds=20)
+    assert provider._load_payload(Request("https://example.test")) == {"ok": True}
+    assert calls == 2
+
+
+def test_provider_timeout_is_bounded_from_environment(monkeypatch) -> None:
+    monkeypatch.setenv("OPEN_METEO_TIMEOUT_SECONDS", "120")
+    assert OpenMeteoWeatherProvider()._timeout_seconds == 45
+
+    monkeypatch.setenv("OPEN_METEO_TIMEOUT_SECONDS", "invalid")
+    assert OpenMeteoWeatherProvider()._timeout_seconds == 20

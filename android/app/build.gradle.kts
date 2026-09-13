@@ -9,7 +9,7 @@ plugins {
 val debugApiBaseUrl = providers.gradleProperty("SKYCAST_API_BASE_URL")
     .getOrElse("http://127.0.0.1:8000")
 val releaseApiBaseUrl = providers.gradleProperty("SKYCAST_RELEASE_API_BASE_URL")
-    .getOrElse("https://api.skycast.example")
+    .getOrElse("https://skycast-api-bqf1.onrender.com")
 val amapApiKey = providers.gradleProperty("AMAP_API_KEY").getOrElse("")
 
 android {

@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import json
+import os
+import time
 from datetime import UTC, datetime, timedelta, timezone
 from typing import Any
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -22,9 +25,13 @@ SOURCE_ID = "open-meteo:forecast"
 
 
 class OpenMeteoWeatherProvider:
-    def __init__(self, base_url: str = OPEN_METEO_URL, timeout_seconds: float = 8.0) -> None:
+    def __init__(
+        self,
+        base_url: str = OPEN_METEO_URL,
+        timeout_seconds: float | None = None,
+    ) -> None:
         self._base_url = base_url
-        self._timeout_seconds = timeout_seconds
+        self._timeout_seconds = timeout_seconds or self._timeout_from_environment()
 
     def sunset_snapshots(self, city: City, days: int) -> list[WeatherSnapshot]:
         query = urlencode(
@@ -39,9 +46,33 @@ class OpenMeteoWeatherProvider:
         )
         source_url = f"{self._base_url}?{query}"
         request = Request(source_url, headers={"User-Agent": "SkyCast/0.1"})
-        with urlopen(request, timeout=self._timeout_seconds) as response:
-            payload = json.load(response)
+        payload = self._load_payload(request)
         return self.parse_payload(payload, source_url, datetime.now(UTC))
+
+    def _load_payload(self, request: Request) -> dict[str, Any]:
+        for attempt in range(2):
+            try:
+                with urlopen(request, timeout=self._timeout_seconds) as response:
+                    return json.load(response)
+            except HTTPError as exc:
+                if attempt == 0 and (exc.code == 429 or 500 <= exc.code < 600):
+                    time.sleep(0.25)
+                    continue
+                raise
+            except (URLError, TimeoutError, OSError):
+                if attempt == 0:
+                    time.sleep(0.25)
+                    continue
+                raise
+        raise RuntimeError("Open-Meteo request exhausted without a response")
+
+    @staticmethod
+    def _timeout_from_environment() -> float:
+        try:
+            configured = float(os.getenv("OPEN_METEO_TIMEOUT_SECONDS", "20"))
+        except ValueError:
+            configured = 20.0
+        return min(max(configured, 5.0), 45.0)
 
     @staticmethod
     def parse_payload(
