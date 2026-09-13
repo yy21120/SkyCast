@@ -566,11 +566,12 @@ private fun AgentConversation(
     val latestMessageRequester = remember { BringIntoViewRequester() }
     val moduleRequester = remember { BringIntoViewRequester() }
     val expandThreshold = with(LocalDensity.current) { 36.dp.toPx() }
-    var pullPastTop by remember { mutableFloatStateOf(0f) }
-    var reachedTopDuringGesture by remember { mutableStateOf(false) }
-    var topPullArmed by remember { mutableStateOf(false) }
+    var pullPastBoundary by remember { mutableFloatStateOf(0f) }
+    var boundaryDirection by remember { mutableStateOf(0) }
+    var reachedBoundaryDuringGesture by remember { mutableStateOf(false) }
+    var armedBoundaryDirection by remember { mutableStateOf<Int?>(null) }
     LaunchedEffect(heroCollapsed) {
-        if (!heroCollapsed) topPullArmed = false
+        if (!heroCollapsed) armedBoundaryDirection = null
     }
     val expandOnPullConnection = remember(conversationScroll, heroCollapsed, expandThreshold) {
         object : NestedScrollConnection {
@@ -579,40 +580,61 @@ private fun AgentConversation(
                 available: Offset,
                 source: NestedScrollSource,
             ): Offset {
-                if (
-                    heroCollapsed &&
-                    source == NestedScrollSource.UserInput &&
-                    conversationScroll.value == 0 &&
-                    available.y > 0f
-                ) {
-                    pullPastTop += available.y
+                if (heroCollapsed && source == NestedScrollSource.UserInput) {
+                    val direction = when {
+                        conversationScroll.value == 0 && available.y > 0f -> 1
+                        conversationScroll.value == conversationScroll.maxValue && available.y < 0f -> -1
+                        else -> 0
+                    }
+                    if (direction != 0) {
+                        if (boundaryDirection == 0 || boundaryDirection == direction) {
+                            pullPastBoundary += abs(available.y)
+                        } else {
+                            pullPastBoundary = abs(available.y)
+                        }
+                        boundaryDirection = direction
+                    }
+
+                    val reachedDirection = when {
+                        conversationScroll.value == 0 && consumed.y > 0f -> 1
+                        conversationScroll.value == conversationScroll.maxValue && consumed.y < 0f -> -1
+                        else -> 0
+                    }
+                    if (reachedDirection != 0) {
+                        reachedBoundaryDuringGesture = true
+                        boundaryDirection = reachedDirection
+                    }
                 }
                 if (
-                    heroCollapsed &&
-                    source == NestedScrollSource.UserInput &&
-                    conversationScroll.value == 0 &&
-                    consumed.y > 0f
+                    conversationScroll.value > 0 &&
+                    conversationScroll.value < conversationScroll.maxValue
                 ) {
-                    reachedTopDuringGesture = true
-                }
-                if (conversationScroll.value > 0) {
-                    topPullArmed = false
-                    pullPastTop = 0f
+                    armedBoundaryDirection = null
+                    pullPastBoundary = 0f
+                    boundaryDirection = 0
                 }
                 return Offset.Zero
             }
 
             override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
-                if (heroCollapsed && (pullPastTop >= expandThreshold || reachedTopDuringGesture)) {
-                    if (topPullArmed && pullPastTop >= expandThreshold) {
+                if (
+                    heroCollapsed &&
+                    boundaryDirection != 0 &&
+                    (pullPastBoundary >= expandThreshold || reachedBoundaryDuringGesture)
+                ) {
+                    if (
+                        armedBoundaryDirection == boundaryDirection &&
+                        pullPastBoundary >= expandThreshold
+                    ) {
                         onExpandHero()
-                        topPullArmed = false
+                        armedBoundaryDirection = null
                     } else {
-                        topPullArmed = true
+                        armedBoundaryDirection = boundaryDirection
                     }
                 }
-                pullPastTop = 0f
-                reachedTopDuringGesture = false
+                pullPastBoundary = 0f
+                boundaryDirection = 0
+                reachedBoundaryDuringGesture = false
                 return Velocity.Zero
             }
         }
