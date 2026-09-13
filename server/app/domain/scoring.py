@@ -81,7 +81,11 @@ def assess_sunset(snapshot: WeatherSnapshot) -> SunsetOpportunity:
         recommendation = "skip"
         summary = "当前基线条件不理想，不建议仅为晚霞专程出发。"
 
-    confidence = "medium" if snapshot.source_id.startswith("open-meteo") else "low"
+    confidence = (
+        "medium"
+        if snapshot.source_id.startswith(("open-meteo", "met-no"))
+        else "low"
+    )
     scene_id = f"wuhan-sunset-{snapshot.valid_date.isoformat()}"
 
     return SunsetOpportunity(

@@ -1,8 +1,55 @@
 {
   "schema_version": 1,
-  "catalog_verified_at": "2026-08-28",
+  "catalog_verified_at": "2026-09-13",
   "review_after_days": 180,
   "sources": [
+    {
+      "source_id": "met-no:locationforecast",
+      "provider": "MET Norway",
+      "product": "Locationforecast 2.0 Complete",
+      "category": "weather_forecast",
+      "admission_status": "approved",
+      "decision_summary": "作为 Open-Meteo 被限流时的免密钥实时备用源；请求必须使用可识别 User-Agent，并缓存结果以避免不必要流量。",
+      "access": {
+        "method": "public_api",
+        "authentication": "none",
+        "cost": "not_stated",
+        "endpoint": "https://api.met.no/weatherapi/locationforecast/2.0/complete"
+      },
+      "licensing": {
+        "license_name": "NLOD 2.0 and CC BY 4.0",
+        "license_url": "https://docs.api.met.no/doc/License.html",
+        "attribution_required": true,
+        "attribution_text": "Weather data from MET Norway",
+        "permissions": {
+          "local_research": "allowed",
+          "public_portfolio": "allowed",
+          "production": "allowed",
+          "redistribution": "allowed"
+        }
+      },
+      "freshness": {
+        "mode": "scheduled",
+        "expected_interval_minutes": 180,
+        "typical_latency_minutes": null,
+        "expires_after_minutes": 360,
+        "policy_basis": "SkyCast 采用与主天气源一致的 6 小时最大缓存期限；该值不是 MET Norway SLA。"
+      },
+      "evidence": [
+        {
+          "url": "https://api.met.no/weatherapi/locationforecast/2.0/documentation",
+          "claim": "Locationforecast 2.0 提供全球未来约九天的 JSON 预报，要求使用可识别的 User-Agent。",
+          "verified_at": "2026-09-13"
+        },
+        {
+          "url": "https://docs.api.met.no/doc/License.html",
+          "claim": "数据按 NLOD 2.0 和 CC BY 4.0 提供，使用时应署名 MET Norway。",
+          "verified_at": "2026-09-13"
+        }
+      ],
+      "fallback": "当该备用源也不可用时返回最近缓存；没有有效缓存则明确进入离线演示模式。",
+      "risk_note": "免费服务没有 SLA；降水概率缺失时由小时降水量映射为保守风险档位，能见度缺失时使用湿度和雾覆盖率估算，界面仍标注为规则基线。"
+    },
     {
       "source_id": "skycast:synthetic-radar:wuhan-v1",
       "provider": "SkyCast",

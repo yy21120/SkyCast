@@ -12,7 +12,7 @@ from app.domain.agent import AgentChatRequest, AgentChatResponse
 from app.domain.feedback import SunsetFeedbackCreate, SunsetFeedbackResponse
 from app.domain.models import City, OpportunitiesResponse
 from app.providers.fixture import FixtureWeatherProvider
-from app.providers.open_meteo import OpenMeteoWeatherProvider
+from app.providers.live_weather import LiveWeatherProvider
 from app.services.agent import AgentLanguageModel, DeepSeekLanguageModel, GroundedSunsetAgent
 from app.services.feedback import (
     FeedbackConflictError,
@@ -57,6 +57,7 @@ def create_app(
     agent_language_model: AgentLanguageModel | None = None,
 ) -> FastAPI:
     repository = feedback_repository or SQLiteFeedbackRepository(DEFAULT_FEEDBACK_DATABASE)
+    live_weather_provider = LiveWeatherProvider()
     skycast_app = FastAPI(
         title="SkyCast API",
         version="0.2.0",
@@ -103,7 +104,7 @@ def create_app(
         provider = (
             FixtureWeatherProvider(REPLAY_FIXTURE)
             if mode == "replay"
-            else OpenMeteoWeatherProvider()
+            else live_weather_provider
         )
         try:
             return OpportunityService(provider, mode).list_sunset_opportunities(city, days)
@@ -125,7 +126,7 @@ def create_app(
         provider = (
             FixtureWeatherProvider(REPLAY_FIXTURE)
             if request.mode == "replay"
-            else OpenMeteoWeatherProvider()
+            else live_weather_provider
         )
         mode = request.mode
         try:
